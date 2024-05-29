@@ -1,0 +1,21 @@
+.amount-cell {
+  text-align: end;
+}
+
+.action-cell {
+  display: flex;
+  width: 20px;
+  margin-left: auto;
+}
+
+.back-button:visited {
+  color: #6f6f6f;
+}
+
+.Polaris-TextField__VerticalContent {
+  overflow: unset;
+}
+
+.collapsible-ingredient-group > .Polaris-Link:focus {
+  outline: none;
+}
