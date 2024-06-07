@@ -7,8 +7,8 @@ import {
     MobileBackArrowMajor
 } from '@shopify/polaris-icons';
 import { useRouter } from 'next/router';
-import QuillJs from '@/Components/QuillJs';
-import IngredientGroupModal from '@/Components/IngredientGroupModal';
+import QuillJs from '@/Components/QuillJs'; 
+import ShopifyProductsSelect from "@/Components/ShopifyProductsSelect";
 
 export default function EditLocations() {
 
@@ -416,24 +416,6 @@ export default function EditLocations() {
                             </div>
                             <div style={{ width: '25%', padding: '15px' }}>
                                 <TextField
-                                    label="Product Eligibility"
-                                    type='text'
-                                    value={values.product_eligibility}
-                                    error={errors.product_eligibility}
-                                    autoComplete="off"
-                                    inputMode='text'
-                                    onChange={(value) => {
-                                        onValuesChange(value, 'product_eligibility')
-                                    }}
-                                />
-                            </div>
-                        </div>
-                    </div>
-                    <div style={{ marginBottom: "10px", display: 'flex', justifyContent: 'end' }} >
-                        <div style={{ width: '100%', display: 'flex' }}>
-
-                            <div style={{ width: '25%', padding: '15px' }}>
-                                <TextField
                                     label="Prep Time"
                                     type='number'
                                     value={values.min_prep_time}
@@ -445,7 +427,7 @@ export default function EditLocations() {
                                         onValuesChange(value, 'min_prep_time')
                                     }}
                                 />
-                            </div>
+                            </div> 
                             <div style={{ width: '25%', padding: '15px' }}>
                                 <TextField
                                     label="Delivery rate Per Mile"
@@ -459,7 +441,11 @@ export default function EditLocations() {
                                     }}
                                 />
                             </div>
-                            <div style={{ width: '25%', padding: '15px' }}>
+                        </div>
+                    </div>
+                    <div style={{ marginBottom: "10px", display: 'flex', justifyContent: 'end' }} >
+                        <div style={{ width: '100%', display: 'flex' }}>
+                            <div style={{ width: '50%', padding: '15px' }}>
                                 <TextField
                                     label="Future delivery Limit"
                                     type='number'
@@ -472,7 +458,7 @@ export default function EditLocations() {
                                     }}
                                 />
                             </div>
-                            <div style={{ width: '25%', padding: '15px' }}>
+                            <div style={{ width: '50%', padding: '15px' }}>
                                 <TextField
                                     label="minimum_cart_contents_config"
                                     type='text'
@@ -485,6 +471,7 @@ export default function EditLocations() {
                                     }}
                                 />
                             </div>
+                            
                         </div>
                     </div>
                     <div style={{ marginBottom: "10px", display: 'flex', justifyContent: 'end' }} >
@@ -501,23 +488,42 @@ export default function EditLocations() {
                                         onValuesChange(value, 'order_tag')
                                     }}
                                 />
-                            </div>
-                            <div style={{ width: '50%', padding: '15px' }}>
-                                <TextField
-                                    label="Product Eligibility"
-                                    type='text'
-                                    value={values.product_eligibility}
-                                    error={errors.product_eligibility}
-                                    autoComplete="off"
-                                    inputMode='text'
-                                    onChange={(value) => {
-                                        onValuesChange(value, 'product_eligibility')
-                                    }}
-                                />
+                            </div> 
+                           
+                            <div style={{ width: '50%', display: 'flex', border: '1px solid #E3E3E3' }}>
+                                <div style={{ width: '100%', display: 'flex' }}>
+                                    <center>Product</center>
+                                    <div style={{ width: '50%', padding: '15px' }}>
+                                        <ShopifyProductsSelect
+                                            //onFieldsChange={onFieldsChange}
+                                            //clearValue={clearValue}
+                                            //validationErrors={validationErrors}
+                                           // isEditing={isEditing}
+                                           // groupIndex={index}
+                                            //response={ingredientResponse}
+                                           // editingValues={item['ingredients']}
+                                           // editingFields={item['ingredients']}
+                                           // updateDefaultOptions={updateDefaultOptionsHandler}
+                                        />
+                                    </div>
+                                    <div style={{ width: '50%', padding: '15px' }}>
+                                        <ShopifyProductsSelect
+                                            //onFieldsChange={onFieldsChange}
+                                            //clearValue={clearValue}
+                                            //validationErrors={validationErrors}
+                                           // isEditing={isEditing}
+                                           // groupIndex={index}
+                                            //response={ingredientResponse}
+                                           // editingValues={item['ingredients']}
+                                           // editingFields={item['ingredients']}
+                                           // updateDefaultOptions={updateDefaultOptionsHandler}
+                                        />
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
-
+                    <label htmlFor="no_overwrite_stock">Timeslot Configuration </label>                
                     {daysOrder.map((day) => (
                         <div key={day}>
                             <Button onClick={() => handleToggle(day)} ariaExpanded={open[day]} ariaControls={`${day}-collapsible`}>

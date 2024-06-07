@@ -55,14 +55,14 @@ export default function Locations() {
                     country_code: dt.country_code ? dt.country_code : '-',
                     country_name: dt.country_name ? dt.country_name : '-',
                     province_code: dt.province_code ? dt.province_code : '-',
-                    timeslot_config: dt.timeslot_config ? dt.timeslot_config : '-',
+                  //  timeslot_config: dt.timeslot_config ? dt.timeslot_config : '-',
                     delivery_distance_limit: dt.delivery_distance_limit ? dt.delivery_distance_limit : '-',
                     order_tag: dt.order_tag ? dt.order_tag : '-',
-                    product_eligibility: dt.product_eligibility ? dt.product_eligibility : '-',
+                  //  product_eligibility: dt.product_eligibility ? dt.product_eligibility : '-',
                     min_prep_time: dt.min_prep_time ? dt.min_prep_time : '-',
                     custom_delivery_rate_per_mile: dt.custom_delivery_rate_per_mile ? dt.custom_delivery_rate_per_mile : '-',
                     future_delivery_limit: dt.future_delivery_limit ? dt.future_delivery_limit : '-',
-                    minimum_cart_contents_config: dt.minimum_cart_contents_config ? dt.minimum_cart_contents_config : '-',
+                    //minimum_cart_contents_config: dt.minimum_cart_contents_config ? dt.minimum_cart_contents_config : '-',
                     action: action
                 }
             })
@@ -127,20 +127,20 @@ export default function Locations() {
                     address2: dt.address2 ? dt.address2 : '-',
                     city: dt.city ? dt.city : '-',
                     zip: dt.zip ? dt.zip : '-',
-                    province: dt.province ? dt.province : '-',
+                  //  province: dt.province ? dt.province : '-',
                     country: dt.country ? dt.country : '-',
                     phone: dt.phone ? dt.phone : '-',
-                    country_code: dt.country_code ? dt.country_code : '-',
-                    country_name: dt.country_name ? dt.country_name : '-',
-                    province_code: dt.province_code ? dt.province_code : '-',
-                    timeslot_config: dt.timeslot_config ? dt.timeslot_config : '-',
-                    delivery_distance_limit: dt.delivery_distance_limit ? dt.delivery_distance_limit : '-',
-                    order_tag: dt.order_tag ? dt.order_tag : '-',
-                    product_eligibility: dt.product_eligibility ? dt.product_eligibility : '-',
-                    min_prep_time: dt.min_prep_time ? dt.min_prep_time : '-',
-                    custom_delivery_rate_per_mile: dt.custom_delivery_rate_per_mile ? dt.custom_delivery_rate_per_mile : '-',
-                    future_delivery_limit: dt.future_delivery_limit ? dt.future_delivery_limit : '-',
-                    minimum_cart_contents_config: dt.minimum_cart_contents_config ? dt.minimum_cart_contents_config : '-',
+                   // country_code: dt.country_code ? dt.country_code : '-',
+                  //  country_name: dt.country_name ? dt.country_name : '-',
+                   // province_code: dt.province_code ? dt.province_code : '-',
+                    //timeslot_config: dt.timeslot_config ? dt.timeslot_config : '-',
+                   // delivery_distance_limit: dt.delivery_distance_limit ? dt.delivery_distance_limit : '-',
+                  //  order_tag: dt.order_tag ? dt.order_tag : '-',
+                    //product_eligibility: dt.product_eligibility ? dt.product_eligibility : '-',
+                  //  min_prep_time: dt.min_prep_time ? dt.min_prep_time : '-',
+                   // custom_delivery_rate_per_mile: dt.custom_delivery_rate_per_mile ? dt.custom_delivery_rate_per_mile : '-',
+                    //future_delivery_limit: dt.future_delivery_limit ? dt.future_delivery_limit : '-',
+                    //minimum_cart_contents_config: dt.minimum_cart_contents_config ? dt.minimum_cart_contents_config : '-',
                     action: action
                 }
             })
@@ -178,7 +178,7 @@ export default function Locations() {
 
     return <Box minHeight='100vh' maxWidth="100%" as='section' background="bg">
         <div style={{ display: 'flex', justifyContent: 'center' }}>
-            <div style={{ maxWidth: "70%", display: 'flex', justifyContent: 'center', margin: '25px' }}>
+            <div style={{ maxWidth: "90%", display: 'flex', justifyContent: 'center', margin: '25px' }}>
                 <Card padding={800} >
                     <div style={{ marginBottom: "10px" }}>
                         <Text variant="heading3xl" alignment="center" as={'h1'} >Locations</Text>

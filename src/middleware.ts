@@ -3,7 +3,7 @@ export async function middleware(request, event) {
     const { pathname } = request.nextUrl;
 
     if (pathname === '/') {
-        return NextResponse.redirect(`/recipes`);
+        return NextResponse.redirect(`/locations`);
     }   
     
     return NextResponse.next();
