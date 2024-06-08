@@ -114,7 +114,7 @@ export default function EditLocations() {
                 const dt = response.data;
 
                 const mergedData = { ...initialData, ...dt.timeslot_config };
-                console.log(mergedData, dt.timeslot_config);
+                
                 setValues({
                     name: dt.name,
                     address1: dt.address1 ? dt.address1 : '',
@@ -188,6 +188,7 @@ export default function EditLocations() {
             //window.location.href = `/locations`
         }).catch((response) => {
             const error = response.response.data.errors
+            console.log('in errors= '.error)
             const err = {}
             Object.keys(error).map((key) => {
                 err[key] = <ul key={key} style={{ margin: 0, listStyle: 'none', padding: 0 }}>
@@ -495,26 +496,28 @@ export default function EditLocations() {
                                     <center>Product</center>
                                     <div style={{ width: '50%', padding: '15px' }}>
                                         <ShopifyProductsSelect
+                                            title="product_eligibility_delivery"
                                             //onFieldsChange={onFieldsChange}
                                             //clearValue={clearValue}
-                                            //validationErrors={validationErrors}
+                                            validationErrors={errors.product_eligibility}
                                            // isEditing={isEditing}
                                            // groupIndex={index}
                                             //response={ingredientResponse}
-                                           // editingValues={item['ingredients']}
+                                            editingValues={values.product_eligibility.delivery}
                                            // editingFields={item['ingredients']}
                                            // updateDefaultOptions={updateDefaultOptionsHandler}
                                         />
                                     </div>
                                     <div style={{ width: '50%', padding: '15px' }}>
                                         <ShopifyProductsSelect
+                                            title="product_eligibility_pickup"
                                             //onFieldsChange={onFieldsChange}
                                             //clearValue={clearValue}
-                                            //validationErrors={validationErrors}
+                                            validationErrors={errors.product_eligibility}
                                            // isEditing={isEditing}
                                            // groupIndex={index}
                                             //response={ingredientResponse}
-                                           // editingValues={item['ingredients']}
+                                            editingValues={values.product_eligibility.pickup}
                                            // editingFields={item['ingredients']}
                                            // updateDefaultOptions={updateDefaultOptionsHandler}
                                         />

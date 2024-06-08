@@ -1,3 +1,4 @@
+import axiosInstance from '@/plugins/axios';
 import { LegacyStack, Tag, Autocomplete } from '@shopify/polaris';
 import { useState, useCallback } from 'react';
 
@@ -6,7 +7,8 @@ export default function MultipleSelect({
     optionsLabelValue, 
     optionsValue, optionsValueChange,
     selectedOptionsValue, selectedOptionsValueChange,
-    validationErrors
+    validationErrors,
+    updateOptions,
 }) {
     const [inputValue, setInputValue] = useState('');
 
@@ -19,12 +21,8 @@ export default function MultipleSelect({
                 return;
             }
 
-            const filterRegex = new RegExp(value, 'i');
-            const resultOptions = defaultOptionsValue.filter((option) =>
-                option.label.match(filterRegex),
-            );
-
-            optionsValueChange(resultOptions);
+            updateOptions(value)
+            
         },
         [selectedOptionsValue],
     );

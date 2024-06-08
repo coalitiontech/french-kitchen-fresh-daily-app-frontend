@@ -6,7 +6,7 @@ import MultipleSelect from "./MultipleSelect";
 import axiosInstance from '@/plugins/axios';
 
 export default function ShopifyProductsSelect({ onFieldsChange, clearValue, validationErrors, editingValues = [], isEditing = false, editingFields = [], response = {}, groupIndex, updateDefaultOptions }) {
-    
+    console.log('editing values=', editingValues);
     useEffect(() => {
 
         axiosInstance.get(`/api/select/shopifyProducts`).then((response) => {
@@ -15,8 +15,9 @@ export default function ShopifyProductsSelect({ onFieldsChange, clearValue, vali
                 setDefaultOptions(response.data.selectData)
                 setOptionsLabel(response.data.optionsLabel)
             }
-            setSelectedOptions(editingValues.map((item) => (item.ingredient_id)))
-        setSelectedFields(editingFields)
+            setSelectedOptions(editingValues);
+           // setSelectedOptions(editingValues.map((item) => (item.ingredient_id)))
+            //setSelectedFields(editingFields)
         }).catch((error) => {
             console.log(error)
         })
@@ -27,10 +28,8 @@ export default function ShopifyProductsSelect({ onFieldsChange, clearValue, vali
     const [defaultOptions, setDefaultOptions] = useState([]);
     const [optionsLabel, setOptionsLabel] = useState({})
     const [options, setOptions] = useState([]);
-
     const [selectedFields, setSelectedFields] = useState([]);
 
-     
     useEffect(() => {
         if (!isEditing) {
             setSelectedOptions([])
@@ -76,7 +75,7 @@ export default function ShopifyProductsSelect({ onFieldsChange, clearValue, vali
 
     const updateOptions = (value) => {
         axiosInstance.get(`/api/select/shopifyProducts?title=${value}`).then((response) => {
-            console.log(response);
+            //console.log(response);
             optionsValueChangeHandler(response.data.selectData);
         }).catch((error) => {
             console.log(error)
@@ -92,18 +91,17 @@ export default function ShopifyProductsSelect({ onFieldsChange, clearValue, vali
 
             return selectedFieldsBkp;
         })
+        console.log('selectedFields = ' +selectedFields);
 
     }
-
-     
 
     return <div style={{ padding: '15px' }}>
         {/* <h2 style={{ textAlign: 'center', fontSize: '20px', fontWeight: 'bold' }}>Ingredients</h2> */}
         
         <MultipleSelect
-            validationErrors=''
+            validationErrors={validationErrors}
             optionsValueChange={optionsValueChangeHandler}
-           // selectedOptionsValueChange={selectedOptionsValueChangeHandler}
+            selectedOptionsValueChange={selectedOptionsValueChangeHandler}
             selectedOptionsValue={selectedOptions}
             defaultOptionsValue={defaultOptions}
             optionsLabelValue={optionsLabel}
@@ -112,28 +110,28 @@ export default function ShopifyProductsSelect({ onFieldsChange, clearValue, vali
         />
         <div style={{ marginBottom: '15px', marginTop: '10px' }}>
             {
-                selectedFields.map((field, index) => {
-                    return <div key={field.ingredient_id} style={{ padding: '15px', backgroundColor: '#f1f1f1', marginTop: '20px', borderRadius: '10px' }}>
-                        <div style={{ textAlign: 'center', marginBottom: '15px' }}>
-                            <Text variant="headingMd" as="h3">
-                                Products: {optionsLabel[field.ingredient_id]}
-                            </Text>
-                        </div>
-                        <div style={{ display: 'flex', justifyContent: 'space-around' }}>
-                            <div style={{ width: '100%' }}>
-                                <TextField
-                                    label="Display Text"
-                                    value={field.display_name ? field.display_name : ''}
-                                    name="display_name"
-                                    error={validationErrors[`ingredients.${index}.display_name`]}
-                                    onChange={(value) => handleChange(value, index, 'display_name')}
-                                    autoComplete="off"
-                                />
-                            </div>
-                        </div>
+                //selectedFields.map((field, index) => {
+                    // return <div key={field.ingredient_id} style={{ padding: '15px', backgroundColor: '#f1f1f1', marginTop: '20px', borderRadius: '10px' }}>
+                    //     <div style={{ textAlign: 'center', marginBottom: '15px' }}>
+                    //         <Text variant="headingMd" as="h3">
+                    //             Products: {optionsLabel[field.ingredient_id]}
+                    //         </Text>
+                    //     </div>
+                    //     {/* <div style={{ display: 'flex', justifyContent: 'space-around' }}>
+                    //         <div style={{ width: '100%' }}>
+                    //             <TextField
+                    //                 label="Display Text"
+                    //                 value={field.display_name ? field.display_name : ''}
+                    //                 name="display_name"
+                    //                 error={validationErrors.product_eligibility}
+                    //                 onChange={(value) => handleChange(value, index, 'display_name')}
+                    //                 autoComplete="off"
+                    //             />
+                    //         </div>
+                    //     </div> */}
                          
-                    </div>
-                })
+                    // </div>
+               // })
             }
         </div>
     </div>
