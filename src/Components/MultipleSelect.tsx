@@ -9,6 +9,7 @@ export default function MultipleSelect({
     selectedOptionsValue, selectedOptionsValueChange,
     validationErrors,
     updateOptions,
+    label
 }) {
     const [inputValue, setInputValue] = useState('');
 
@@ -52,11 +53,13 @@ export default function MultipleSelect({
 
     const textField = (
         <Autocomplete.TextField
+            label={label}
             error={validationErrors}
             onChange={updateText}
             value={inputValue}
             verticalContent={verticalContentMarkup}
             autoComplete="off"
+            placeholder="Select products"
         />
     );
 

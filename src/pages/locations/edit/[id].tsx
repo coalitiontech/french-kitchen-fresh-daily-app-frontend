@@ -7,7 +7,7 @@ import {
     MobileBackArrowMajor
 } from '@shopify/polaris-icons';
 import { useRouter } from 'next/router';
-import QuillJs from '@/Components/QuillJs'; 
+import QuillJs from '@/Components/QuillJs';
 import ShopifyProductsSelect from "@/Components/ShopifyProductsSelect";
 
 export default function EditLocations() {
@@ -20,7 +20,6 @@ export default function EditLocations() {
 
     const [isLoading, setIsLoading] = useState(true)
 
-    const [clearValue, setClearValue] = useState(false);
     const router = useRouter();
     const processId = router.query.id
     const initialData = {
@@ -114,7 +113,7 @@ export default function EditLocations() {
                 const dt = response.data;
 
                 const mergedData = { ...initialData, ...dt.timeslot_config };
-                
+
                 setValues({
                     name: dt.name,
                     address1: dt.address1 ? dt.address1 : '',
@@ -130,7 +129,7 @@ export default function EditLocations() {
                     timeslot_config: dt.timeslot_config ? dt.timeslot_config : '',
                     delivery_distance_limit: dt.delivery_distance_limit ? dt.delivery_distance_limit : '',
                     order_tag: dt.order_tag ? dt.order_tag : '',
-                    product_eligibility: dt.product_eligibility ? dt.product_eligibility : '',
+                    product_eligibility: dt.product_eligibility ? dt.product_eligibility : {},
                     min_prep_time: dt.min_prep_time ? dt.min_prep_time : '',
                     custom_delivery_rate_per_mile: dt.custom_delivery_rate_per_mile ? dt.custom_delivery_rate_per_mile : '',
                     future_delivery_limit: dt.future_delivery_limit ? dt.future_delivery_limit : '',
@@ -145,8 +144,16 @@ export default function EditLocations() {
     const onValuesChange = (value, name, index) => {
         setValues((prevValue) => {
             let valueBkp = { ...prevValue }
-            valueBkp[name] = value
 
+            if (name == 'product_eligibility_delivery') {
+                valueBkp.product_eligibility.delivery = value
+            } else if (name == 'product_eligibility_pickup') {
+                valueBkp.product_eligibility.pickup = value
+            } else {
+                valueBkp[name] = value
+            }
+
+            console.log(valueBkp);
             return valueBkp
         })
     }
@@ -428,7 +435,7 @@ export default function EditLocations() {
                                         onValuesChange(value, 'min_prep_time')
                                     }}
                                 />
-                            </div> 
+                            </div>
                             <div style={{ width: '25%', padding: '15px' }}>
                                 <TextField
                                     label="Delivery rate Per Mile"
@@ -472,7 +479,7 @@ export default function EditLocations() {
                                     }}
                                 />
                             </div>
-                            
+
                         </div>
                     </div>
                     <div style={{ marginBottom: "10px", display: 'flex', justifyContent: 'end' }} >
@@ -489,44 +496,35 @@ export default function EditLocations() {
                                         onValuesChange(value, 'order_tag')
                                     }}
                                 />
-                            </div> 
-                           
-                            <div style={{ width: '50%', display: 'flex', border: '1px solid #E3E3E3' }}>
+                            </div>
+
+                            <div style={{ width: '50%', display: 'flex' }}>
                                 <div style={{ width: '100%', display: 'flex' }}>
-                                    <center>Product</center>
                                     <div style={{ width: '50%', padding: '15px' }}>
                                         <ShopifyProductsSelect
-                                            title="product_eligibility_delivery"
-                                            //onFieldsChange={onFieldsChange}
-                                            //clearValue={clearValue}
+                                            field="product_eligibility_delivery"
+                                            title="Delivery"
+                                            onFieldsChange={onValuesChange}
                                             validationErrors={errors.product_eligibility}
-                                           // isEditing={isEditing}
-                                           // groupIndex={index}
-                                            //response={ingredientResponse}
+                                            isEditing={true}
                                             editingValues={values.product_eligibility.delivery}
-                                           // editingFields={item['ingredients']}
-                                           // updateDefaultOptions={updateDefaultOptionsHandler}
                                         />
                                     </div>
                                     <div style={{ width: '50%', padding: '15px' }}>
                                         <ShopifyProductsSelect
-                                            title="product_eligibility_pickup"
-                                            //onFieldsChange={onFieldsChange}
-                                            //clearValue={clearValue}
+                                            field="product_eligibility_pickup"
+                                            onFieldsChange={onValuesChange}
+                                            title="Pickup"
                                             validationErrors={errors.product_eligibility}
-                                           // isEditing={isEditing}
-                                           // groupIndex={index}
-                                            //response={ingredientResponse}
+                                            isEditing={true}
                                             editingValues={values.product_eligibility.pickup}
-                                           // editingFields={item['ingredients']}
-                                           // updateDefaultOptions={updateDefaultOptionsHandler}
                                         />
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <label htmlFor="no_overwrite_stock">Timeslot Configuration </label>                
+                    <label htmlFor="no_overwrite_stock">Timeslot Configuration </label>
                     {daysOrder.map((day) => (
                         <div key={day}>
                             <Button onClick={() => handleToggle(day)} ariaExpanded={open[day]} ariaControls={`${day}-collapsible`}>
