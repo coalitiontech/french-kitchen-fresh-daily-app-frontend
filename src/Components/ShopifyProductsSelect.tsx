@@ -6,7 +6,7 @@ import MultipleSelect from "./MultipleSelect";
 import axiosInstance from '@/plugins/axios';
 
 export default function ShopifyProductsSelect({ onFieldsChange, title, field, clearValue, validationErrors, editingValues = [], isEditing = false, response = {}, groupIndex, updateDefaultOptions }) {
-    console.log('editing values=', editingValues);
+     
     useEffect(() => {
 
         axiosInstance.get(`/api/select/shopifyProducts`).then((response) => {
@@ -46,16 +46,15 @@ export default function ShopifyProductsSelect({ onFieldsChange, title, field, cl
     }
 
     const updateOptions = (value) => {
-        console.log(value)
+         
         axiosInstance.get(`/api/select/shopifyProducts?title=${value}`).then((response) => {
-            console.log(response.data.selectData);
             optionsValueChangeHandler(response.data.selectData);
         }).catch((error) => {
             console.log(error)
         })
     }
 
-    return <div >
+    return <div>
         
         <MultipleSelect
             label={title}

@@ -3,6 +3,7 @@ import { Box, Card, Text, TextField, Button, Toast, Divider, Icon, Select, Modal
 import { useCallback, useEffect, useState } from 'react';
 import axiosInstance from '@/plugins/axios';
 import { DatePicker } from '@shopify/polaris';
+import TimeSelect from '@/Components/TimeSelect'; 
 import {
     MobileBackArrowMajor
 } from '@shopify/polaris-icons';
@@ -32,9 +33,13 @@ export default function EditLocations() {
         sunday: { timeslots: { delivery: [], pickup: [] } },
     };
 
+    const initialCartConfigData = {
+        delivery: { min_items: 0, min_order_total: 0.00 },
+        pickup: { min_items: 0, min_order_total: 0.00 }
+    };
+
     // Order of days from Monday to Sunday
     const daysOrder = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
-
 
     /************************************************** */
 
@@ -58,7 +63,7 @@ export default function EditLocations() {
     };
 
     const handleChange = (day, type, index, field, value) => {
-
+        
         setValues((prevValues) => {
             const newData = { ...prevValues.timeslot_config_data };
             const valuesBkp = { ...prevValues };
@@ -67,9 +72,11 @@ export default function EditLocations() {
                 newData[day].timeslots[type][index][field] = value;
             }
             valuesBkp['timeslot_config_data'] = newData;
-
+            console.log(valuesBkp);
             return valuesBkp;
+            
         });
+         
     };
 
     const addDeliverySlot = (day) => {
@@ -90,21 +97,43 @@ export default function EditLocations() {
 
     };
 
-    //   const addPickupSlot = (day) => {
-    //     setTimeslotData((prevData) => {
-    //       const newData = { ...prevData };
-    //       const newSlot = { slot_start: '', slot_end: '', order_limit: null };
-    //       if (!newData[day].timeslots) {
-    //         newData[day].timeslots = {};
-    //       }
-    //       if (!newData[day].timeslots.pickup) {
-    //         newData[day].timeslots.pickup = [];
-    //       }
-    //       newData[day].timeslots.pickup.push(newSlot);
-    //       return newData;
-    //     });
-    //   };
+    const addPickupSlot = (day) => {
+        setValues((prevData) => {
+            const newData = { ...prevData.timeslot_config_data };
+            const valuesBkp = { ...prevData };
+            const newSlot = { slot_start: '', slot_end: '', order_limit: null };
+            if (!newData[day].timeslots) {
+                newData[day].timeslots = {};
+            }
+            if (!newData[day].timeslots.pickup) {
+                newData[day].timeslots.pickup = [];
+            }
+            newData[day].timeslots.pickup.push(newSlot);
+            valuesBkp['timeslot_config_data'] = newData;
+            return valuesBkp;
+        });
 
+    };
+
+    const handleCartChange = (type, field, value) => {
+       
+        setValues((prevValues) => {
+            const newData = { ...prevValues.minimum_cart_contents_config };
+            const valuesCartBkp = { ...prevValues };
+            console.log('newdata', newData);
+
+            if (!newData[type]) {
+                newData[type] = {};
+            }
+            newData[type][field] = value;
+            valuesCartBkp['minimum_cart_contents_config'] = newData;
+
+            return valuesCartBkp;
+        });
+
+    };
+
+     
     /****************************************************************************/
     useEffect(() => {
         if (processId) {
@@ -113,6 +142,7 @@ export default function EditLocations() {
                 const dt = response.data;
 
                 const mergedData = { ...initialData, ...dt.timeslot_config };
+                const mergedCartConfigData = { ...initialCartConfigData, ...dt.minimum_cart_contents_config };
 
                 setValues({
                     name: dt.name,
@@ -133,11 +163,12 @@ export default function EditLocations() {
                     min_prep_time: dt.min_prep_time ? dt.min_prep_time : '',
                     custom_delivery_rate_per_mile: dt.custom_delivery_rate_per_mile ? dt.custom_delivery_rate_per_mile : '',
                     future_delivery_limit: dt.future_delivery_limit ? dt.future_delivery_limit : '',
-                    minimum_cart_contents_config: dt.minimum_cart_contents_config ? dt.minimum_cart_contents_config : '',
+                    minimum_cart_contents_config: mergedCartConfigData,
                     timeslot_config_data: mergedData,
                 })
                 setIsLoading(false)
             })
+             
         }
     }, [processId])
 
@@ -149,11 +180,11 @@ export default function EditLocations() {
                 valueBkp.product_eligibility.delivery = value
             } else if (name == 'product_eligibility_pickup') {
                 valueBkp.product_eligibility.pickup = value
-            } else {
+            } 
+            else {
                 valueBkp[name] = value
             }
 
-            console.log(valueBkp);
             return valueBkp
         })
     }
@@ -192,7 +223,7 @@ export default function EditLocations() {
 
     const onClickActionHandler = () => {
         axiosInstance.put(`/api/shopifyLocation/${processId}`, values).then((response) => {
-            //window.location.href = `/locations`
+            window.location.href = `/locations`
         }).catch((response) => {
             const error = response.response.data.errors
             console.log('in errors= '.error)
@@ -221,7 +252,7 @@ export default function EditLocations() {
         <div style={{ maxWidth: "70%", display: 'flex', justifyContent: 'center', margin: '25px', marginLeft: 'auto', marginRight: 'auto' }}>
             <Card padding={800} >
                 <div style={{ width: '4000px', maxWidth: '100%' }}>
-                    <a className='back-button' href='/shopifyLocation' style={{ position: 'absolute', display: 'flex', textDecoration: 'none' }}>
+                    <a className='back-button' href='/locations' style={{ position: 'absolute', display: 'flex', textDecoration: 'none' }}>
                         <Icon
                             source={MobileBackArrowMajor}
                             tone="base"
@@ -232,7 +263,7 @@ export default function EditLocations() {
                     </div>
                     <div style={{ marginBottom: "10px", display: 'flex', justifyContent: 'end' }} >
                         <div style={{ width: '100%', display: 'flex' }}>
-                            <div style={{ width: '33%', padding: '15px' }}>
+                            <div style={{ width: '25%', padding: '15px' }}>
                                 <TextField
                                     name='name'
                                     label="Name"
@@ -245,7 +276,7 @@ export default function EditLocations() {
                                     }}
                                 />
                             </div>
-                            <div style={{ width: '33%', padding: '15px' }}>
+                            <div style={{ width: '25%', padding: '15px' }}>
                                 <TextField
                                     label="Address Line 1"
                                     type='text'
@@ -258,7 +289,7 @@ export default function EditLocations() {
                                     }}
                                 />
                             </div>
-                            <div style={{ width: '33%', padding: '15px' }}>
+                            <div style={{ width: '25%', padding: '15px' }}>
                                 <TextField
                                     label="Address Line 2"
                                     type='text'
@@ -272,11 +303,6 @@ export default function EditLocations() {
                                     }}
                                 />
                             </div>
-                        </div>
-                    </div>
-                    <div style={{ marginBottom: "10px", display: 'flex', justifyContent: 'end' }} >
-                        <div style={{ width: '100%', display: 'flex' }}>
-
                             <div style={{ width: '25%', padding: '15px' }}>
                                 <TextField
                                     label="City"
@@ -290,6 +316,12 @@ export default function EditLocations() {
                                     }}
                                 />
                             </div>
+                        </div>
+                    </div>
+                    <div style={{ marginBottom: "10px", display: 'flex', justifyContent: 'end' }} >
+                        <div style={{ width: '100%', display: 'flex' }}>
+
+                            
                             <div style={{ width: '25%', padding: '15px' }}>
                                 <TextField
                                     label="Zip"
@@ -327,6 +359,19 @@ export default function EditLocations() {
                                     inputMode='text'
                                     onChange={(value) => {
                                         onValuesChange(value, 'country')
+                                    }}
+                                />
+                            </div>
+                            <div style={{ width: '25%', padding: '15px' }}>
+                                <TextField
+                                    label="Future delivery Limit"
+                                    type='number'
+                                    value={values.future_delivery_limit}
+                                    error={errors.future_delivery_limit}
+                                    autoComplete="off"
+                                    inputMode='decimal'
+                                    onChange={(value) => {
+                                        onValuesChange(value, 'future_delivery_limit')
                                     }}
                                 />
                             </div>
@@ -451,33 +496,72 @@ export default function EditLocations() {
                             </div>
                         </div>
                     </div>
+                    <label htmlFor="no_overwrite_stock">Cart Content Config </label>
+
                     <div style={{ marginBottom: "10px", display: 'flex', justifyContent: 'end' }} >
+
                         <div style={{ width: '100%', display: 'flex' }}>
-                            <div style={{ width: '50%', padding: '15px' }}>
-                                <TextField
-                                    label="Future delivery Limit"
-                                    type='number'
-                                    value={values.future_delivery_limit}
-                                    error={errors.future_delivery_limit}
-                                    autoComplete="off"
-                                    inputMode='decimal'
-                                    onChange={(value) => {
-                                        onValuesChange(value, 'future_delivery_limit')
-                                    }}
-                                />
+                            
+                            <div style={{ width: '50%', padding: '15px', margin: '10px', border: '1px solid #E3E3E3' }}>
+                                <center>Delivery</center>
+                                <div style={{ width: '100%', display: 'flex' }}>
+                                    <div style={{ width: '50%', padding: '15px' }}>
+                                        <TextField
+                                            label="Minimum Items"
+                                            name="min_items"
+                                            type='number'
+                                            value={values.minimum_cart_contents_config.delivery.min_items}
+                                            error={errors.minimum_cart_contents_config}
+                                            autoComplete="off"
+                                            min='0'
+                                            inputMode='number'
+                                            onChange={(value) => handleCartChange('delivery', 'min_items', value)}
+                                              
+                                        />
+                                    </div>
+                                    <div style={{ width: '50%', padding: '15px' }}>
+                                        <TextField
+                                            label="Minimum Order Total"
+                                            type='number'
+                                            value={values.minimum_cart_contents_config.delivery.min_order_total}
+                                            error={errors.minimum_cart_contents_config}
+                                            autoComplete="off"
+                                            min='0'
+                                            inputMode='number'
+                                            onChange={(value) => handleCartChange('delivery', 'min_order_total', value)}
+                                        /> 
+                                    </div>
+                                </div>
                             </div>
-                            <div style={{ width: '50%', padding: '15px' }}>
-                                <TextField
-                                    label="minimum_cart_contents_config"
-                                    type='text'
-                                    value={values.minimum_cart_contents_config}
-                                    error={errors.minimum_cart_contents_config}
-                                    autoComplete="off"
-                                    inputMode='text'
-                                    onChange={(value) => {
-                                        onValuesChange(value, 'minimum_cart_contents_config')
-                                    }}
-                                />
+                            <div style={{ width: '50%', padding: '15px', margin: '10px', border: '1px solid #E3E3E3' }}>
+                                <center>Pick Up</center>
+                                <div style={{ width: '100%', display: 'flex' }}>
+                                    <div style={{ width: '50%', padding: '15px' }}>
+                                        <TextField
+                                            label="Minimum Items"
+                                            type='number'
+                                            value={values.minimum_cart_contents_config.pickup.min_items}
+                                            error={errors.minimum_cart_contents_config}
+                                            autoComplete="off"
+                                            min='0'
+                                            inputMode='number'
+                                            onChange={(value) => handleCartChange('pickup', 'min_items', value)}
+                                        />
+                                    </div> 
+                                   
+                                    <div style={{ width: '50%', padding: '15px' }}>
+                                        <TextField
+                                            label="Minimum Order Total"
+                                            type='number'
+                                            value={values.minimum_cart_contents_config.pickup.min_order_total}
+                                            error={errors.min_order_total}
+                                            autoComplete="off"
+                                            min='0'
+                                            inputMode='number'
+                                            onChange={(value) => handleCartChange('pickup', 'min_order_total', value)}
+                                        /> 
+                                    </div>
+                                </div>
                             </div>
 
                         </div>
@@ -497,7 +581,8 @@ export default function EditLocations() {
                                     }}
                                 />
                             </div>
-
+                            
+                            <label htmlFor="no_overwrite_stock">Product Eligibility </label>
                             <div style={{ width: '50%', display: 'flex' }}>
                                 <div style={{ width: '100%', display: 'flex' }}>
                                     <div style={{ width: '50%', padding: '15px' }}>
@@ -527,9 +612,10 @@ export default function EditLocations() {
                     <label htmlFor="no_overwrite_stock">Timeslot Configuration </label>
                     {daysOrder.map((day) => (
                         <div key={day}>
-                            <Button onClick={() => handleToggle(day)} ariaExpanded={open[day]} ariaControls={`${day}-collapsible`}>
+                            <center><Button onClick={() => handleToggle(day)} ariaExpanded={open[day]} ariaControls={`${day}-collapsible`}>
                                 {day.charAt(0).toUpperCase() + day.slice(1)}
                             </Button>
+                            </center>
                             <br />
                             <Collapsible open={open[day]} id={`${day}-collapsible`} transition={{ duration: '500ms', timingFunction: 'ease-in-out' }} expandOnPrint>
                                 <div style={{ marginBottom: "10px", display: 'flex', justifyContent: 'end' }}>
@@ -542,25 +628,46 @@ export default function EditLocations() {
                                                 </Button>
                                             </center>
                                             {values.timeslot_config_data[day].timeslots && values.timeslot_config_data[day].timeslots.delivery && values.timeslot_config_data[day].timeslots.delivery.map((slot, index) => (
-                                                <div key={index}>
+                                                <div key={index} style={{ padding: '15px', margin: '10px', border: '1px solid #E3E3E3' }} >
                                                     <div style={{ width: '100%', display: 'flex' }}>
                                                         <div style={{ width: '50%', padding: '15px' }}>
-                                                            <TextField
+                                                            <TimeSelect 
+                                                             label="Slot Start"
+                                                             type='number'
+                                                             max={ slot.slot_end }
+                                                             value={slot.slot_start}
+                                                             autoComplete="off"
+                                                             onChange={(value) => handleChange(day, 'delivery', index, 'slot_start', value)} 
+                                                             style={{ width:"30%" }}
+                                                            />
+                                                            {/* <TextField
                                                                 label="Slot Start"
-                                                                type='text'
+                                                                type='number'
+                                                                max={slot.slot_end}
                                                                 value={slot.slot_start}
                                                                 autoComplete="off"
                                                                 onChange={(value) => handleChange(day, 'delivery', index, 'slot_start', value)}
-                                                            />
+                                                            /> */}
                                                         </div>
                                                         <div style={{ width: '50%', padding: '15px' }}>
-                                                            <TextField
+                                                            <TimeSelect 
                                                                 label="Slot End"
-                                                                type='text'
+                                                                type='number'
+                                                                min={slot.slot_start}
+                                                                value={slot.slot_end}
+                                                                autoComplete="off"
+                                                                onChange={(value) => handleChange(day, 'delivery', index, 'slot_end', value)} 
+                                                                style={{ width:"30%" }}
+                                                            />
+
+                                                            {/* <TextField
+                                                                label="Slot End"
+                                                                type='number'
+                                                                min={slot.slot_start}
                                                                 value={slot.slot_end}
                                                                 autoComplete="off"
                                                                 onChange={(value) => handleChange(day, 'delivery', index, 'slot_end', value)}
-                                                            />
+                                                            /> */}
                                                         </div>
                                                     </div>
                                                     <div style={{ width: '100%', display: 'flex' }}>
@@ -588,22 +695,40 @@ export default function EditLocations() {
                                                 <div key={index}>
                                                     <div style={{ width: '100%', display: 'flex' }}>
                                                         <div style={{ width: '50%', padding: '15px' }}>
-                                                            <TextField
+                                                            <TimeSelect 
+                                                             label="Slot Start"
+                                                             type='number'
+                                                             max={ slot.slot_end }
+                                                             value={slot.slot_start}
+                                                             autoComplete="off"
+                                                             onChange={(value) => handleChange(day, 'pickup', index, 'slot_start', value)} 
+                                                             style={{ width:"20%" }}
+                                                            />
+                                                            {/* <TextField
                                                                 label="Slot Start"
                                                                 type='text'
                                                                 value={slot.slot_start}
                                                                 autoComplete="off"
                                                                 onChange={(value) => handleChange(day, 'pickup', index, 'slot_start', value)}
-                                                            />
+                                                            /> */}
                                                         </div>
                                                         <div style={{ width: '50%', padding: '15px' }}>
-                                                            <TextField
+                                                            <TimeSelect 
+                                                                label="Slot End"
+                                                                type='number'
+                                                                min={slot.slot_start}
+                                                                value={slot.slot_end}
+                                                                autoComplete="off"
+                                                                onChange={(value) => handleChange(day, 'pickup', index, 'slot_end', value)} 
+                                                                style={{ width:"20%" }}
+                                                            />
+                                                            {/* <TextField
                                                                 label="Slot End"
                                                                 type='text'
                                                                 value={slot.slot_end}
                                                                 autoComplete="off"
                                                                 onChange={(value) => handleChange(day, 'pickup', index, 'slot_end', value)}
-                                                            />
+                                                            /> */}
                                                         </div>
 
                                                     </div>

@@ -11,10 +11,9 @@ import { useRouter } from 'next/router';
 import QuillJs from '@/Components/QuillJs';
 import ShopifyProductsSelect from "@/Components/ShopifyProductsSelect";
 
-export default function EditSettings() {
+export default function NewSettings() {
 
-    const [values, setValues] = useState({})
-    const [errors, setErrors] = useState({})
+    
     const [active, setActive] = useState(false);
 
     const [selectedDate, setSelectedDate] = useState(new Date())
@@ -24,19 +23,26 @@ export default function EditSettings() {
     const router = useRouter();
     const processId = router.query.id
      
-
     const initialCartConfigData = {
         delivery: { min_items: 0, min_order_total: 0.00 },
         pickup: { min_items: 0, min_order_total: 0.00 }
     };
 
+    const [values, setValues] = useState({
+        minimum_cart_contents_config: initialCartConfigData
+         
+    })
+
+    const [errors, setErrors] = useState({
+        minimum_cart_contents_config: null
+    })
+    
     const handleCartChange = (type, field, value) => {
        
         setValues((prevValues) => {
             const newData = { ...prevValues.minimum_cart_contents_config };
             const valuesCartBkp = { ...prevValues };
-            console.log('newdata', newData);
-
+             
             if (!newData[type]) {
                 newData[type] = {};
             }
@@ -45,119 +51,95 @@ export default function EditSettings() {
 
             return valuesCartBkp;
         });
+        console.log(values);
 
     };
 
-     
-    /****************************************************************************/
-    useEffect(() => {
-        if (processId) {
+    const onValuesChange = (value, name) => {
 
-            axiosInstance.get(`/api/settings/${processId}`).then((response) => {
-                console.log('data=', response.data)
-                const dt = response.data;
-                const mergedCartConfigData = { ...initialCartConfigData, ...dt.minimum_cart_contents_config };
+        setValues((prevValues) => ({
+            ...prevValues,
+        }));
 
-                setValues({
-                    minimum_cart_contents_config: mergedCartConfigData
-                })
-                setIsLoading(false)
-            })
-            console.log('values data=', values.minimum_cart_contents_config);
-             
-        }
-    }, [processId])
 
-    const onValuesChange = (value, name, index) => {
-        setValues((prevValue) => {
-            let valueBkp = { ...prevValue }
-            valueBkp[name] = value
-
-            return valueBkp
-        })
-    }
+    };
 
     const toastMarkup = active ? (
-        <Toast content="Settings Edited Successfully!" onDismiss={() => {
+        <Toast content="Setting Created Successfully!" onDismiss={() => {
+            setValues({
+                minimum_cart_contents_config: ''
+            })
             setActive(false)
+
         }} />
     ) : null;
 
-    const onSaveAndKeepEditingHandler = useCallback(() => {
 
-        values.minimum_cart_contents_config = JSON.stringify(values.minimum_cart_contents_config);
-
-        axiosInstance.put(`/api/settings/${processId}`, values).then((response) => {
-            setErrors({})
+    const onSaveAndAddAnotherHandler = useCallback(() => {
+         
+        axiosInstance.post('/api/settings', values).then((response) => {
+            setErrors({
+                minimum_cart_contents_config: null
+            })
             setActive(true)
         }).catch((response) => {
             const error = response.response.data.errors
-            const err = {}
+            const err = {
+                minimum_cart_contents_config: null
+            }
+
             Object.keys(error).map((key) => {
                 err[key] = <ul key={key} style={{ margin: 0, listStyle: 'none', padding: 0 }}>
                     {error[key].map((message, index) => {
-                        let splitedKey = key.split('.');
-                        let fieldTitle = splitedKey[splitedKey.length - 1].replace('_', ' ')
-
-                        if (splitedKey.length > 1) {
-                            return <li key={index} style={{ margin: 0 }}>{message.replace(key, fieldTitle)}</li>
-                        } else {
-                            return <li key={index} style={{ margin: 0 }}>{message}</li>
-                        }
+                        return <li key={index} style={{ margin: 0 }}>{message}</li>
                     })}
                 </ul>
             })
 
-            setErrors({ ...err })
+            setErrors({ ...errors, ...err })
         })
     }, [values])
 
-    const onClickActionHandler = () => { 
+    const onClickActionHandler = useCallback(() => {
 
         values.minimum_cart_contents_config = JSON.stringify(values.minimum_cart_contents_config);
 
-        axiosInstance.put(`/api/settings/${processId}`, values).then((response) => {
+        axiosInstance.post('/api/settings', values).then((response) => {
             window.location.href = `/settings`
         }).catch((response) => {
             const error = response.response.data.errors
-             
-            const err = {}
+            const err = {
+                minimum_cart_contents_config: null
+            }
+            
             Object.keys(error).map((key) => {
                 err[key] = <ul key={key} style={{ margin: 0, listStyle: 'none', padding: 0 }}>
                     {error[key].map((message, index) => {
-                        let splitedKey = key.split('.');
-                        let fieldTitle = splitedKey[splitedKey.length - 1].replace('_', ' ')
-
-                        if (splitedKey.length > 1) {
-                            return <li key={index} style={{ margin: 0 }}>{message.replace(key, fieldTitle)}</li>
-                        } else {
-                            return <li key={index} style={{ margin: 0 }}>{message}</li>
-                        }
+                        return <li key={index} style={{ margin: 0 }}>{message}</li>
                     })}
                 </ul>
             })
 
-            setErrors({ ...err })
-        });
-    }
+            setErrors({ ...errors, ...err })
+        })
+    }, [values])
 
-    return !isLoading && <Box minHeight='100vh' maxWidth="100%" as='section' background="bg">
+    return <Box minHeight='100vh' maxWidth="100%" as='section' background="bg">
         {/* <Frame> */}
         <div style={{ maxWidth: "70%", display: 'flex', justifyContent: 'center', margin: '25px', marginLeft: 'auto', marginRight: 'auto' }}>
             <Card padding={800} >
                 <div style={{ width: '4000px', maxWidth: '100%' }}>
-                    <a className='back-button' href='/settings' style={{ position: 'absolute', display: 'flex', textDecoration: 'none' }}>
+                    <a className='back-button' href='/locations' style={{ position: 'absolute', display: 'flex', textDecoration: 'none' }}>
                         <Icon
                             source={MobileBackArrowMajor}
                             tone="base"
                         /><span> Back</span>
                     </a>
                     <div style={{ marginBottom: "10px" }}>
-                        <Text variant="heading3xl" alignment="center" as={'h1'} >Edit Setting</Text>
+                        <Text variant="heading3xl" alignment="center" as={'h1'} >New Setting</Text>
                     </div>
-                     
-                    
-                    <label htmlFor="cart_content">Cart Content Config </label>
+                      
+                    <label htmlFor="no_overwrite_stock">Cart Content Config </label>
 
                     <div style={{ marginBottom: "10px", display: 'flex', justifyContent: 'end' }} >
 
@@ -175,6 +157,7 @@ export default function EditSettings() {
                                             error={errors.minimum_cart_contents_config}
                                             autoComplete="off"
                                             inputMode='number'
+                                            min='0'
                                             onChange={(value) => handleCartChange('delivery', 'min_items', value)}
                                               
                                         />
@@ -186,6 +169,7 @@ export default function EditSettings() {
                                             value={values.minimum_cart_contents_config.delivery.min_order_total}
                                             error={errors.minimum_cart_contents_config}
                                             autoComplete="off"
+                                            min='0'
                                             inputMode='number'
                                             onChange={(value) => handleCartChange('delivery', 'min_order_total', value)}
                                         /> 
@@ -202,6 +186,7 @@ export default function EditSettings() {
                                             value={values.minimum_cart_contents_config.pickup.min_items}
                                             error={errors.minimum_cart_contents_config}
                                             autoComplete="off"
+                                            min='0'
                                             inputMode='number'
                                             onChange={(value) => handleCartChange('pickup', 'min_items', value)}
                                         />
@@ -214,6 +199,7 @@ export default function EditSettings() {
                                             value={values.minimum_cart_contents_config.pickup.min_order_total}
                                             error={errors.min_order_total}
                                             autoComplete="off"
+                                            min='0'
                                             inputMode='number'
                                             onChange={(value) => handleCartChange('pickup', 'min_order_total', value)}
                                         /> 
@@ -226,10 +212,10 @@ export default function EditSettings() {
                      <Divider borderColor="border" />
 
                     <div style={{ marginBottom: "10px", marginTop: "10px", display: 'flex', justifyContent: 'end' }} >
-                        <div style={{ marginRight: '10px' }}><Button loading={active} onClick={onSaveAndKeepEditingHandler}>Save & Keep Editing</Button></div>
+                        <div style={{ marginRight: '10px' }}><Button loading={active} onClick={onSaveAndAddAnotherHandler}>Save & Create Another</Button></div>
                         <Button loading={active} onClick={onClickActionHandler}>Save</Button>
                     </div>
-                    {/* <ButtonEnd onClickAction={onClickActionHandler} buttonName="Create Ingredient" /> */}
+                     
                 </div>
             </Card>
             {toastMarkup}
