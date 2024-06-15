@@ -7,119 +7,128 @@ import TimeSelect from '@/Components/TimeSelect';
 import {
     MobileBackArrowMajor
 } from '@shopify/polaris-icons';
-import { useRouter } from 'next/router';
-import QuillJs from '@/Components/QuillJs';
-import ShopifyProductsSelect from "@/Components/ShopifyProductsSelect";
 
-export default function EditSettings() {
-
-    const [values, setValues] = useState({})
-    const [errors, setErrors] = useState({})
+export default function NewSettings() {
+    
     const [active, setActive] = useState(false);
 
     const [selectedDate, setSelectedDate] = useState(new Date())
 
     const [isLoading, setIsLoading] = useState(true)
 
-    const router = useRouter();
-    const processId = router.query.id
-     
-     
-    /****************************************************************************/
-    useEffect(() => {
-        if (processId) {
+    const [values, setValues] = useState({
+        start_time: '',
+        end_time: '',
+        start_date: '',
+        end_date: '',
+        status: false,
+        apply_to_all_locations: false,
+         
+    })
 
-            axiosInstance.get(`/api/blackoutDateTime/${processId}`).then((response) => {
-                console.log('data=', response.data)
-                const dt = response.data;
-                
-                setValues({
-                    start_time: dt.start_time ? dt.start_time : '-',
-                    end_time: dt.end_time ? dt.end_time : '-',
-                    start_date: dt.start_date ? dt.start_date : '-',
-                    end_date: dt.end_date ? dt.end_date : '-',
-                    status: dt.status == 1 ? true : false,
-                    apply_to_all_locations: (dt.apply_to_all_locations == 1 && dt.apply_to_all_locations != '') ? true : false,
-                })
-                setIsLoading(false)
-            })
-              
-        }
-    }, [processId])
+    const [errors, setErrors] = useState({
+        
+        start_time: null,
+        end_time: null,
+        start_date: null,
+        end_date: null,
+        status: null,
+        apply_to_all_locations: null,
+        
+    })
 
-    const onValuesChange = (value, name, index) => {
+    const onValuesChange = (value, name) => {
+
         setValues((prevValue) => {
             let valueBkp = { ...prevValue }
             valueBkp[name] = value
-
+            
             return valueBkp
         })
-    }
+
+    };
 
     const toastMarkup = active ? (
-        <Toast content="Blackout Date Time Settings Edited Successfully!" onDismiss={() => {
+        <Toast content="BlackoutdateTime Created Successfully!" onDismiss={() => {
+            setValues({
+                start_time: '',
+                end_time: '',
+                start_date: '',
+                end_date: '',
+                status: false,
+                apply_to_all_locations: false,
+            })
             setActive(false)
+
         }} />
     ) : null;
 
-    const onSaveAndKeepEditingHandler = useCallback(() => {
 
-        
-        axiosInstance.put(`/api/blackoutDateTime/${processId}`, values).then((response) => {
-            setErrors({})
+    const onSaveAndAddAnotherHandler = useCallback(() => {
+         
+        axiosInstance.post('/api/blackoutDateTime', values).then((response) => {
+            setErrors({
+                start_time: null,
+                end_time: null,
+                start_date: null,
+                end_date: null,
+                status: false,
+                apply_to_all_locations: false,
+            })
             setActive(true)
         }).catch((response) => {
             const error = response.response.data.errors
-            const err = {}
+            const err = {
+                start_time: null,
+                end_time: null,
+                start_date: null,
+                end_date: null,
+                status: null,
+                apply_to_all_locations: null,
+            }
+
             Object.keys(error).map((key) => {
                 err[key] = <ul key={key} style={{ margin: 0, listStyle: 'none', padding: 0 }}>
                     {error[key].map((message, index) => {
-                        let splitedKey = key.split('.');
-                        let fieldTitle = splitedKey[splitedKey.length - 1].replace('_', ' ')
-
-                        if (splitedKey.length > 1) {
-                            return <li key={index} style={{ margin: 0 }}>{message.replace(key, fieldTitle)}</li>
-                        } else {
-                            return <li key={index} style={{ margin: 0 }}>{message}</li>
-                        }
+                        return <li key={index} style={{ margin: 0 }}>{message}</li>
                     })}
                 </ul>
             })
 
-            setErrors({ ...err })
+            setErrors({ ...errors, ...err })
         })
     }, [values])
 
-    const onClickActionHandler = () => { 
+    const onClickActionHandler = useCallback(() => {
 
-        values.minimum_cart_contents_config = JSON.stringify(values.minimum_cart_contents_config);
+        //values.minimum_cart_contents_config = JSON.stringify(values.minimum_cart_contents_config);
 
-        axiosInstance.put(`/api/blackoutDateTime/${processId}`, values).then((response) => {
+        axiosInstance.post('/api/blackoutDateTime', values).then((response) => {
             window.location.href = `/blackoutSettings`
         }).catch((response) => {
             const error = response.response.data.errors
-             
-            const err = {}
+            const err = {
+                start_time: null,
+                end_time: null,
+                start_date: null,
+                end_date: null,
+                status: null,
+                apply_to_all_locations: null,
+            }
+            
             Object.keys(error).map((key) => {
                 err[key] = <ul key={key} style={{ margin: 0, listStyle: 'none', padding: 0 }}>
                     {error[key].map((message, index) => {
-                        let splitedKey = key.split('.');
-                        let fieldTitle = splitedKey[splitedKey.length - 1].replace('_', ' ')
-
-                        if (splitedKey.length > 1) {
-                            return <li key={index} style={{ margin: 0 }}>{message.replace(key, fieldTitle)}</li>
-                        } else {
-                            return <li key={index} style={{ margin: 0 }}>{message}</li>
-                        }
+                        return <li key={index} style={{ margin: 0 }}>{message}</li>
                     })}
                 </ul>
             })
 
-            setErrors({ ...err })
-        });
-    }
+            setErrors({ ...errors, ...err })
+        })
+    }, [values])
 
-    return !isLoading && <Box minHeight='100vh' maxWidth="100%" as='section' background="bg">
+    return <Box minHeight='100vh' maxWidth="100%" as='section' background="bg">
         {/* <Frame> */}
         <div style={{ maxWidth: "70%", display: 'flex', justifyContent: 'center', margin: '25px', marginLeft: 'auto', marginRight: 'auto' }}>
             <Card padding={800} >
@@ -131,9 +140,9 @@ export default function EditSettings() {
                         /><span> Back</span>
                     </a>
                     <div style={{ marginBottom: "10px" }}>
-                        <Text variant="heading3xl" alignment="center" as={'h1'} >Edit Setting</Text>
+                        <Text variant="heading3xl" alignment="center" as={'h1'} >New Blackout Time </Text>
                     </div>
-                     
+                      
                     <div style={{ width: '100%', display: 'flex' }}>
                         <div style={{ width: '50%', padding: '15px' }}>
                             <TimeSelect 
@@ -245,10 +254,10 @@ export default function EditSettings() {
                      <Divider borderColor="border" />
 
                     <div style={{ marginBottom: "10px", marginTop: "10px", display: 'flex', justifyContent: 'end' }} >
-                        <div style={{ marginRight: '10px' }}><Button loading={active} onClick={onSaveAndKeepEditingHandler}>Save & Keep Editing</Button></div>
+                        <div style={{ marginRight: '10px' }}><Button loading={active} onClick={onSaveAndAddAnotherHandler}>Save & Create Another</Button></div>
                         <Button loading={active} onClick={onClickActionHandler}>Save</Button>
                     </div>
-                    {/* <ButtonEnd onClickAction={onClickActionHandler} buttonName="Create Ingredient" /> */}
+                     
                 </div>
             </Card>
             {toastMarkup}

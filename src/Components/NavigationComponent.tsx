@@ -21,17 +21,17 @@ export default function NavigationComponent({url}) {
               selected: (url.includes('/settings'))
             },
             {
-              url: '/inventory',
-              label: 'Inventory',
+              url: '/inventorySchedule',
+              label: 'Inventory Schedule',
               icon: FoodMajor,
               selected: (url.includes('/inventorySchedule'))
             },
-            // {
-            //   url: '/blackoutDate',
-            //   label: 'blackoutDate',
-            //   icon: FoodMajor,
-            //   selected: (url.includes('/blackoutDateTime'))
-            // },
+            {
+              url: '/blackoutSettings',
+              label: 'BlackoutSetting',
+              icon: FoodMajor,
+              selected: (url.includes('/blackoutSettings'))
+            },
           ]}
         />
       </Navigation>
