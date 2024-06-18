@@ -7,6 +7,7 @@ import TimeSelect from '@/Components/TimeSelect';
 import ShopifyVariantSelect from "@/Components/ShopifyVariantSelect";
 import ShopifyProductsSelect from "@/Components/ShopifyProductsSelect";
 import DateTimeSelect from '@/Components/DateTimeSelect';
+import moment from 'moment';
 
 import {
     MobileBackArrowMajor
@@ -25,7 +26,7 @@ export default function NewSettings() {
         quantity: '',
         blackout_dates: '',
         stock_datetime: '',
-        overwrite_stock: '',
+        overwrite_stock: false,
         is_active: false,
         recurring_config: '',
          
@@ -42,10 +43,20 @@ export default function NewSettings() {
     })
 
     const onValuesChange = (value, name) => {
-
+        
         setValues((prevValue) => {
             let valueBkp = { ...prevValue }
-            valueBkp[name] = value
+            if(name == 'stock_datetime')
+            {
+                const formattedDate = moment(value).format('YYYY-MM-DD HH:mm:ss');
+                valueBkp[name] = formattedDate;
+        console.log(name+ '= ', formattedDate);
+
+            }
+            else
+            {
+                valueBkp[name] = value
+            }
             
             return valueBkp
         })
@@ -53,12 +64,12 @@ export default function NewSettings() {
     };
 
     const toastMarkup = active ? (
-        <Toast content="BlackoutdateTime Created Successfully!" onDismiss={() => {
+        <Toast content="Inventory Schedule Added Successfully!" onDismiss={() => {
             setValues({
                 quantity: '',
                 blackout_dates: '',
                 stock_datetime: '',
-                overwrite_stock: '',
+                overwrite_stock: false,
                 is_active: false,
                 recurring_config: '',
             })
@@ -70,12 +81,12 @@ export default function NewSettings() {
 
     const onSaveAndAddAnotherHandler = useCallback(() => {
          
-        axiosInstance.post('/api/blackoutDateTime', values).then((response) => {
+        axiosInstance.post('/api/inventorySchedule', values).then((response) => {
             setErrors({
                 quantity: null,
                 blackout_dates: null,
                 stock_datetime: null,
-                overwrite_stock: null,
+                overwrite_stock: false,
                 is_active: false,
                 recurring_config: null,
             })
@@ -107,8 +118,8 @@ export default function NewSettings() {
 
         //values.minimum_cart_contents_config = JSON.stringify(values.minimum_cart_contents_config);
 
-        axiosInstance.post('/api/blackoutDateTime', values).then((response) => {
-            window.location.href = `/blackoutSettings`
+        axiosInstance.post('/api/inventorySchedule', values).then((response) => {
+            window.location.href = `/inventorySchedule`
         }).catch((response) => {
             const error = response.response.data.errors
             const err = {
@@ -134,7 +145,7 @@ export default function NewSettings() {
 
     return <Box minHeight='100vh' maxWidth="100%" as='section' background="bg">
         {/* <Frame> */}
-        <div style={{ maxWidth: "70%", display: 'flex', justifyContent: 'center', margin: '25px', marginLeft: 'auto', marginRight: 'auto' }}>
+        <div style={{ maxWidth: "70%", display: 'flex', justifyContent: 'center', margin: '25px', marginLeft: 'auto', marginRight: 'auto', overflow: 'visible' }}>
             <Card padding={800} >
                 <div style={{ width: '4000px', maxWidth: '100%' }}>
                     <a className='back-button' href='/blackoutSettings' style={{ position: 'absolute', display: 'flex', textDecoration: 'none' }}>
@@ -148,7 +159,7 @@ export default function NewSettings() {
                     </div>
                       
                     <div style={{ width: '100%', display: 'flex' }}>
-                        <div style={{ width: '25%', padding: '15px' }}>
+                        <div style={{ width: '33%', padding: '15px' }}>
                             <ShopifyProductsSelect
                                 field="shopify_product_id"
                                 title="Shopify Product"
@@ -158,7 +169,7 @@ export default function NewSettings() {
                                 editingValues={values.shopify_product_id}
                             />
                         </div>
-                        <div style={{ width: '25%', padding: '15px' }}>
+                        {/* <div style={{ width: '25%', padding: '15px' }}>
                             <ShopifyVariantSelect
                                 field="variant_config"
                                 title="Variant"
@@ -177,8 +188,8 @@ export default function NewSettings() {
                                 isEditing={true}
                                 editingValues={values.variant_config}
                             />
-                        </div>
-                        <div style={{ width: '25%', padding: '15px' }}>
+                        </div> */}
+                        <div style={{ width: '33%', padding: '15px' }}>
                             <TextField 
                                 label="Quantity"
                                 type='number'
@@ -191,10 +202,7 @@ export default function NewSettings() {
                                 style={{ width:"30%" }}
                             />
                         </div> 
-                         
-                    </div>
-                    <div style={{ width: '100%', display: 'flex' }}>
-                        <div style={{ width: '25%', padding: '15px' }}>
+                        <div style={{ width: '33%', padding: '15px' }}>
                             <h3 > Active</h3>
                             <input
                                 type="radio"
@@ -219,7 +227,11 @@ export default function NewSettings() {
                             <label htmlFor="off">Disable</label>
 
                         </div>
-                        <div style={{ width: '25%', padding: '15px' }}>
+                         
+                    </div>
+                    <div style={{ width: '100%', display: 'flex' }}>
+                        
+                        <div style={{ width: '33%', padding: '15px' }}>
                         <h3> Overwrite Stock</h3>
                             <input
                                 type="radio"
@@ -242,20 +254,27 @@ export default function NewSettings() {
                                 />
                             <label htmlFor="overwrite_stock">False</label>
                         </div>
-                        <div style={{ width: '25%', padding: '15px' }}>
+                        <div style={{ width: '33%', padding: '15px' }}>
                             <DateTimeSelect 
-                                name="datetime"
-                            />
-                        </div> 
-                        <div style={{ width: '25%', padding: '15px' }}>
-                            <TextField 
-                                label="Recurring Config"
-                                type='number'
-                                min="0"
-                                value={values.quantity}
+                                label="Stock Datetime"
+                                name="stock_datetime"
+                                value={values.stock_datetime}
                                 autoComplete="off"
                                 onChange={(value) => {
-                                    onValuesChange(value, 'quantity')
+                                    onValuesChange(value, 'stock_datetime')
+                                }}
+                                style={{ width:"30%", overflow: "visible" }}
+                            />
+                        </div> 
+                        <div style={{ width: '33%', padding: '15px' }}>
+                            <TextField 
+                                label="Recurring Config"
+                                name="recurring_config"
+                                 min="0"
+                                value={values.recurring_config}
+                                autoComplete="off"
+                                onChange={(value) => {
+                                    onValuesChange(value, 'recurring_config')
                                 }}
                                 style={{ width:"30%" }}
                             />

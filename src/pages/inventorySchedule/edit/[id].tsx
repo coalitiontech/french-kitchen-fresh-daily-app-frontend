@@ -4,6 +4,9 @@ import { useCallback, useEffect, useState } from 'react';
 import axiosInstance from '@/plugins/axios';
 import { DatePicker } from '@shopify/polaris';
 import TimeSelect from '@/Components/TimeSelect'; 
+import ShopifyVariantSelect from "@/Components/ShopifyVariantSelect";
+ 
+import DateTimeSelect from '@/Components/DateTimeSelect';
 import {
     MobileBackArrowMajor
 } from '@shopify/polaris-icons';
@@ -29,17 +32,16 @@ export default function EditSettings() {
     useEffect(() => {
         if (processId) {
 
-            axiosInstance.get(`/api/blackoutDateTime/${processId}`).then((response) => {
+            axiosInstance.get(`/api/inventorySchedule/${processId}`).then((response) => {
                 console.log('data=', response.data)
                 const dt = response.data;
                 
                 setValues({
-                    start_time: dt.start_time ? dt.start_time : '-',
-                    end_time: dt.end_time ? dt.end_time : '-',
-                    start_date: dt.start_date ? dt.start_date : '-',
-                    end_date: dt.end_date ? dt.end_date : '-',
-                    status: dt.status == 1 ? true : false,
-                    apply_to_all_locations: (dt.apply_to_all_locations == 1 && dt.apply_to_all_locations != '') ? true : false,
+                    quantity: dt.quantity,
+                    stock_datetime: dt.stock_datetime,
+                    overwrite_stock: dt.overwrite_stock,
+                    is_active: dt.is_active == 1 ? true : false,
+                    recurring_config: dt.recurring_config, 
                 })
                 setIsLoading(false)
             })
@@ -57,7 +59,7 @@ export default function EditSettings() {
     }
 
     const toastMarkup = active ? (
-        <Toast content="Blackout Date Time Settings Edited Successfully!" onDismiss={() => {
+        <Toast content="Inventory Schedule Updated Successfully!" onDismiss={() => {
             setActive(false)
         }} />
     ) : null;
@@ -65,7 +67,7 @@ export default function EditSettings() {
     const onSaveAndKeepEditingHandler = useCallback(() => {
 
         
-        axiosInstance.put(`/api/blackoutDateTime/${processId}`, values).then((response) => {
+        axiosInstance.put(`/api/inventorySchedule/${processId}`, values).then((response) => {
             setErrors({})
             setActive(true)
         }).catch((response) => {
@@ -92,10 +94,8 @@ export default function EditSettings() {
 
     const onClickActionHandler = () => { 
 
-        values.minimum_cart_contents_config = JSON.stringify(values.minimum_cart_contents_config);
-
-        axiosInstance.put(`/api/blackoutDateTime/${processId}`, values).then((response) => {
-            window.location.href = `/blackoutSettings`
+        axiosInstance.put(`/api/inventorySchedule/${processId}`, values).then((response) => {
+            window.location.href = `/inventorySchedule`
         }).catch((response) => {
             const error = response.response.data.errors
              
@@ -124,7 +124,7 @@ export default function EditSettings() {
         <div style={{ maxWidth: "70%", display: 'flex', justifyContent: 'center', margin: '25px', marginLeft: 'auto', marginRight: 'auto' }}>
             <Card padding={800} >
                 <div style={{ width: '4000px', maxWidth: '100%' }}>
-                    <a className='back-button' href='/blackoutSettings' style={{ position: 'absolute', display: 'flex', textDecoration: 'none' }}>
+                    <a className='back-button' href='/inventorySchedule' style={{ position: 'absolute', display: 'flex', textDecoration: 'none' }}>
                         <Icon
                             source={MobileBackArrowMajor}
                             tone="base"
@@ -135,113 +135,127 @@ export default function EditSettings() {
                     </div>
                      
                     <div style={{ width: '100%', display: 'flex' }}>
-                        <div style={{ width: '50%', padding: '15px' }}>
-                            <TimeSelect 
-                                label="Start Time"
-                                type='number'
-                                max={ values.end_time }
-                                value={values.start_time}
-                                autoComplete="off"
-                                onChange={(value) => {
-                                    onValuesChange(value, 'start_time')
-                                }}
-                                style={{ width:"30%" }}
+                        <div style={{ width: '33%', padding: '15px' }}>
+                            <ShopifyProductsSelect
+                                field="shopify_product_id"
+                                title="Shopify Product"
+                                onFieldsChange={onValuesChange}
+                                validationErrors={errors.shopify_product_id}
+                                isEditing={true}
+                                editingValues={values.shopify_product_id}
                             />
                         </div>
-                        <div style={{ width: '50%', padding: '15px' }}>
-                            <TimeSelect 
-                                label="End Time"
-                                type='number'
-                                min={ values.start_time }
-                                value={values.end_time}
-                                autoComplete="off"
-                                onChange={(value) => {
-                                    onValuesChange(value, 'end_time')
-                                }}
-                                style={{ width:"30%" }}
+                        {/* <div style={{ width: '25%', padding: '15px' }}>
+                            <ShopifyVariantSelect
+                                field="variant_config"
+                                title="Variant"
+                                onFieldsChange={onValuesChange}
+                                validationErrors={errors.variant_config}
+                                isEditing={true}
+                                editingValues={values.variant_config}
                             />
                         </div>
-                    </div>
-
-                    <div style={{ width: '100%', display: 'flex' }}>
-                        <div style={{ width: '50%', padding: '15px' }}>
+                        <div style={{ width: '25%', padding: '15px' }}>
+                            <ShopifyVariantSelect
+                                field="variant_quantity"
+                                title="Variant Quantity"
+                                onFieldsChange={onValuesChange}
+                                validationErrors={errors.variant_config}
+                                isEditing={true}
+                                editingValues={values.variant_config}
+                            />
+                        </div> */}
+                        <div style={{ width: '33%', padding: '15px' }}>
                             <TextField 
-                                label="Start Date"
-                                type='date'
-                                max={ values.end_date }
-                                value={values.start_date}
+                                label="Quantity"
+                                type='number'
+                                min="0"
+                                value={values.quantity}
                                 autoComplete="off"
                                 onChange={(value) => {
-                                    onValuesChange(value, 'start_date')
+                                    onValuesChange(value, 'quantity')
                                 }}
                                 style={{ width:"30%" }}
                             />
-                        </div>
-                        <div style={{ width: '50%', padding: '15px' }}>
-                        <TextField 
-                                label="Start Date"
-                                type='date'
-                                min={ values.start_date }
-                                value={values.end_date}
-                                autoComplete="off"
-                                onChange={(value) => {
-                                    onValuesChange(value, 'end_date')
-                                }}
-                                style={{ width:"30%" }}
-                            />
-                        </div>
-                    </div>
-                    <div style={{ width: '100%', display: 'flex' }}>
-                        <div style={{ width: '50%', padding: '15px' }}>
-                            <h3 > Status</h3>
+                        </div> 
+                        <div style={{ width: '33%', padding: '15px' }}>
+                            <h3 > Active</h3>
                             <input
                                 type="radio"
-                                name="status"
-                                error={errors.status}
-                                checked={values.status === true}
+                                name="is_active"
+                                error={errors.is_active}
+                                checked={values.is_active === true}
                                 onChange={() => {
-                                    onValuesChange(true, 'status')
+                                    onValuesChange(true, 'is_active')
                                 }}
                             />
                             <label htmlFor="on">Enable</label>
 
                             <input
                                 type="radio"
-                                name="status"
-                                error={errors.status}
-                                checked={values.status === false}
+                                name="is_active"
+                                error={errors.is_active}
+                                checked={values.is_active === false}
                                 onChange={() => {
-                                    onValuesChange(false, 'status')
+                                    onValuesChange(false, 'is_active')
                                 }}
                             />
                             <label htmlFor="off">Disable</label>
 
                         </div>
-                        <div style={{ width: '50%', padding: '15px' }}>
-                        <h3 > Apply To All Locations</h3>
+                         
+                    </div>
+                    <div style={{ width: '100%', display: 'flex' }}>
+                        
+                        <div style={{ width: '33%', padding: '15px' }}>
+                        <h3> Overwrite Stock</h3>
                             <input
                                 type="radio"
-                                name="apply_to_all_locations"
-                                error={errors.apply_to_all_locations}
-                                checked={values.status === true}
+                                name="overwrite_stock"
+                                error={errors.overwrite_stock}
+                                checked={values.overwrite_stock === true}
                                 onChange={() => {
-                                    onValuesChange(true, 'apply_to_all_locations')
+                                    onValuesChange(true, 'overwrite_stock')
                                 }}
                             />
-                            <label htmlFor="apply_to_all_locations_on">True</label>
-
+                            <label htmlFor="overwrite_stock">True</label>
                                 <input
                                     type="radio"
-                                    name="apply_to_all_locations"
-                                    error={errors.apply_to_all_locations}
-                                    checked={values.apply_to_all_locations === false}
+                                    name="overwrite_stock"
+                                    error={errors.overwrite_stock}
+                                    checked={values.overwrite_stock === false}
                                     onChange={() => {
-                                        onValuesChange(false, 'apply_to_all_locations')
+                                        onValuesChange(false, 'overwrite_stock')
                                     }}
                                 />
-                                <label htmlFor="apply_to_all_locations_off">False</label>
+                            <label htmlFor="overwrite_stock">False</label>
                         </div>
-                    </div> 
+                        <div style={{ width: '33%', padding: '15px' }}>
+                            <DateTimeSelect 
+                                label="Stock Datetime"
+                                name="stock_datetime"
+                                value={values.stock_datetime}
+                                autoComplete="off"
+                                onChange={(value) => {
+                                    onValuesChange(value, 'stock_datetime')
+                                }}
+                                style={{ width:"30%", overflow: "visible" }}
+                            />
+                        </div> 
+                        <div style={{ width: '33%', padding: '15px' }}>
+                            <TextField 
+                                label="Recurring Config"
+                                name="recurring_config"
+                                 min="0"
+                                value={values.recurring_config}
+                                autoComplete="off"
+                                onChange={(value) => {
+                                    onValuesChange(value, 'recurring_config')
+                                }}
+                                style={{ width:"30%" }}
+                            />
+                        </div> 
+                    </div>
                      <Divider borderColor="border" />
 
                     <div style={{ marginBottom: "10px", marginTop: "10px", display: 'flex', justifyContent: 'end' }} >
