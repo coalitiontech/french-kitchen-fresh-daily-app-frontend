@@ -4,7 +4,7 @@ import type { AppProps } from 'next/app'
 import '@shopify/polaris/build/esm/styles.css';
 import en from "@shopify/polaris/locales/en.json";
 import '@/styles/table.css';
- 
+import styles from '@/Components/styles.button.css';
 
 import { HomeMinor, OrdersMinor, ProductsMinor } from '@shopify/polaris-icons';
 import {

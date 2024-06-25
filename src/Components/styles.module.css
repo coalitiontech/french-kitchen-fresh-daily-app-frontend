@@ -1,0 +1,6 @@
+.fullWidthButton {
+    width: 100% !important;
+    box-sizing: border-box;
+    display: block !important;
+    margin: 0 !important;
+}

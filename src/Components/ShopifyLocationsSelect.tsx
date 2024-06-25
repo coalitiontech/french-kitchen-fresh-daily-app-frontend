@@ -5,12 +5,11 @@ import SelectSearch from "react-select-search";
 import MultipleSelect from "./MultipleSelect";
 import axiosInstance from '@/plugins/axios';
 
-export default function ShopifyVariantSelect({ onFieldsChange, title, field, clearValue, validationErrors, editingValues = [], isEditing = false, product_id, response = {}, groupIndex, updateDefaultOptions }) {
+export default function ShopifyLocationsSelect({ onFieldsChange, title, field, clearValue, validationErrors, editingValues = [], isEditing = false, response = {}, groupIndex, updateDefaultOptions }) {
      
-
     useEffect(() => {
 
-        axiosInstance.get(`/api/select/productVariant/${product_id}`).then((response) => {
+        axiosInstance.get(`/api/select/locations`).then((response) => {
             if (response.data) {
                 setOptions(response.data.selectData)
                 setDefaultOptions(response.data.selectData)
@@ -45,16 +44,16 @@ export default function ShopifyVariantSelect({ onFieldsChange, title, field, cle
     const optionsValueChangeHandler = (value) => {
         setOptions(value)
     }
- 
+
     const updateOptions = (value) => {
          
-        axiosInstance.get(`/api/select/shopifyProducts/${product_id}?title=${value}`).then((response) => {
+        axiosInstance.get(`/api/select/locations?title=${value}`).then((response) => {
             optionsValueChangeHandler(response.data.selectData);
         }).catch((error) => {
             console.log(error)
         })
     }
- 
+
     return <div>
         
         <MultipleSelect

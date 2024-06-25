@@ -181,7 +181,7 @@ export default function EditSettings() {
                                     </div>
                                     <div style={{ width: '50%', padding: '15px' }}>
                                         <TextField
-                                            label="Minimum Order Total"
+                                            label="Minimum Order Total ($)"
                                             type='number'
                                             value={values.minimum_cart_contents_config.delivery.min_order_total}
                                             error={errors.minimum_cart_contents_config}
@@ -209,7 +209,7 @@ export default function EditSettings() {
                                    
                                     <div style={{ width: '50%', padding: '15px' }}>
                                         <TextField
-                                            label="Minimum Order Total"
+                                            label="Minimum Order Total ($)"
                                             type='number'
                                             value={values.minimum_cart_contents_config.pickup.min_order_total}
                                             error={errors.min_order_total}

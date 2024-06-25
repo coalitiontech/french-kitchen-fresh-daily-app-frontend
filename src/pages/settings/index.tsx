@@ -17,8 +17,11 @@ export default function Settings() {
     const [filters, setFilters] = useState({})
 
     const headings = [
-        { title: 'ID' },
-        { title: 'Config' },
+        { title: 'ID' }, 
+        { title: 'Delivery -  Minimum Items', alignment: 'left'},
+        { title: 'Minimum Order Total', alignment: 'left' },
+        { title: 'Pick Up - Minimum Items', alignment: 'left' },
+        { title: 'Pick Up - Minimum Order Total', alignment: 'left' },
         { title: 'Actions', alignment: 'end' }
     ]
 
@@ -27,43 +30,7 @@ export default function Settings() {
         plural: 'settings',
     };
 
-    useEffect(() => {
-        axiosInstance.get('/api/settings').then((response) => {
-            let data = response.data.data.map((dt) => {
-                let action = <div className='action-cell'>
-                    <a href={`/settings/edit/${dt.id}`} >
-                        <Icon source={EditMajor} tone="base" />
-                    </a>
-                </div>
-
-                return {
-                    id: dt.id,
-                    minimum_cart_contents_config: dt.minimum_cart_contents_config ? dt.minimum_cart_contents_config : '-',
-                    action: action
-                }
-            })
-            const responseData = response.data
-            
-            const format = new Intl.NumberFormat()
-
-            const paginationData = {
-                current_page: responseData.current_page,
-                first_page_url: responseData.first_page_url,
-                last_page: responseData.last_page,
-                last_page_url: responseData.last_page_url,
-                next_page_url: responseData.next_page_url,
-                prev_page_url: responseData.prev_page_url,
-                from: format.format(responseData.from),
-                to: format.format(responseData.to),
-                total: format.format(responseData.total),
-                per_page: responseData.per_page
-            }
-
-            setSettings(data);
-            setPagination(paginationData)
-            setLoading(false)
-        })
-    }, [])
+     
 
     const onClickActionHandler = useCallback(() => {
          
@@ -96,10 +63,14 @@ export default function Settings() {
                         <Icon source={EditMajor} tone="base" />
                     </a>
                 </div>
-
+                    const decodedConfig = JSON.parse(dt.minimum_cart_contents_config); 
+                    
                 return {
-                    id: dt.id,
-                    minimum_cart_contents_config: dt.minimum_cart_contents_config ? dt.minimum_cart_contents_config : '-',
+                    id: dt.id, 
+                    del_min_items: decodedConfig.delivery ? decodedConfig.delivery.min_items : '-',
+                    del_min_order_total: decodedConfig.delivery ? decodedConfig.delivery.min_order_total : '-',
+                    pickup_min_items: decodedConfig.pickup ? decodedConfig.pickup.min_items : '-',
+                    pickup_min_order_total: decodedConfig.pickup ? decodedConfig.pickup.min_order_total : '-',
                     action: action
                 }
             })
@@ -119,7 +90,7 @@ export default function Settings() {
                 total: format.format(responseData.total),
                 per_page: responseData.per_page
             }
-           
+           console.log('data= ', data);
             setSettings(data);
             setPagination(paginationData)
             setLoading(false)

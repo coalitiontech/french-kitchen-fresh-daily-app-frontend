@@ -9,7 +9,7 @@ import {
 } from '@shopify/polaris-icons';
 import { useRouter } from 'next/router';
 import QuillJs from '@/Components/QuillJs';
-import ShopifyProductsSelect from "@/Components/ShopifyProductsSelect";
+import ShopifyLocationsSelect from "@/Components/ShopifyLocationsSelect"; 
 
 export default function EditSettings() {
 
@@ -40,6 +40,7 @@ export default function EditSettings() {
                     end_date: dt.end_date ? dt.end_date : '-',
                     status: dt.status == 1 ? true : false,
                     apply_to_all_locations: (dt.apply_to_all_locations == 1 && dt.apply_to_all_locations != '') ? true : false,
+                    locations: dt.locations_id,
                 })
                 setIsLoading(false)
             })
@@ -170,6 +171,7 @@ export default function EditSettings() {
                                 type='date'
                                 max={ values.end_date }
                                 value={values.start_date}
+                                name='start_date'
                                 autoComplete="off"
                                 onChange={(value) => {
                                     onValuesChange(value, 'start_date')
@@ -179,10 +181,11 @@ export default function EditSettings() {
                         </div>
                         <div style={{ width: '50%', padding: '15px' }}>
                         <TextField 
-                                label="Start Date"
+                                label="End Date"
                                 type='date'
                                 min={ values.start_date }
                                 value={values.end_date}
+                                name='end_date'
                                 autoComplete="off"
                                 onChange={(value) => {
                                     onValuesChange(value, 'end_date')
@@ -192,7 +195,7 @@ export default function EditSettings() {
                         </div>
                     </div>
                     <div style={{ width: '100%', display: 'flex' }}>
-                        <div style={{ width: '50%', padding: '15px' }}>
+                        <div style={{ width: '25%', padding: '15px' }}>
                             <h3 > Status</h3>
                             <input
                                 type="radio"
@@ -217,30 +220,42 @@ export default function EditSettings() {
                             <label htmlFor="off">Disable</label>
 
                         </div>
-                        <div style={{ width: '50%', padding: '15px' }}>
+                        <div style={{ width: '25%', padding: '15px' }}>
                         <h3 > Apply To All Locations</h3>
                             <input
                                 type="radio"
                                 name="apply_to_all_locations"
                                 error={errors.apply_to_all_locations}
-                                checked={values.status === true}
+                                checked={values.apply_to_all_locations === true}
                                 onChange={() => {
                                     onValuesChange(true, 'apply_to_all_locations')
                                 }}
                             />
-                            <label htmlFor="apply_to_all_locations_on">True</label>
+                            <label htmlFor="apply_to_all_locations_on">Yes</label>
 
-                                <input
-                                    type="radio"
-                                    name="apply_to_all_locations"
-                                    error={errors.apply_to_all_locations}
-                                    checked={values.apply_to_all_locations === false}
-                                    onChange={() => {
-                                        onValuesChange(false, 'apply_to_all_locations')
-                                    }}
-                                />
-                                <label htmlFor="apply_to_all_locations_off">False</label>
+                            <input
+                                type="radio"
+                                name="apply_to_all_locations"
+                                error={errors.apply_to_all_locations}
+                                checked={values.apply_to_all_locations === false}
+                                onChange={() => {
+                                    onValuesChange(false, 'apply_to_all_locations')
+                                }}
+                            />
+                            <label htmlFor="apply_to_all_locations_off">No</label>
                         </div>
+                        {values.apply_to_all_locations === false && (
+                        <div style={{ width: '50%', padding: '15px' }}>
+                            <ShopifyLocationsSelect
+                                field="locations_id"
+                                title="Select Product"
+                                onFieldsChange={onValuesChange}
+                                validationErrors={errors.locations}
+                                isEditing={true}
+                                editingValues={values.locations}
+                            />
+                        </div>
+                        )}
                     </div> 
                      <Divider borderColor="border" />
 
