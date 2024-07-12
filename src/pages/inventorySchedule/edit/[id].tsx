@@ -376,7 +376,7 @@ export default function EditSettings() {
                         /><span> Back</span>
                     </a>
                     <div style={{ marginBottom: "10px" }}>
-                        <Text variant="heading3xl" alignment="center" as={'h1'} >Edit Setting</Text>
+                        <Text variant="heading3xl" alignment="center" as={'h1'} >Edit Inventory Schedule</Text>
                     </div>
                      
                     <div style={{ width: '100%', display: 'flex' }}>
@@ -402,7 +402,7 @@ export default function EditSettings() {
                                 <h3>Product Variants</h3>
                                 {productVariants.map((variant) => (
                                     <div key={variant.id} style={{ display: 'flex', alignItems: 'center', marginBottom: '10px',width: '80%',padding: '10px' }}>
-                                        <div style={{ width: '50%', padding: '15px' }}>
+                                        <div style={{ width: '33%', padding: '15px' }}>
                                             <Checkbox
                                                 label={variant.title}
                                                 type="checkbox"
@@ -412,7 +412,13 @@ export default function EditSettings() {
                                                 style={{ marginRight: '10px' }}
                                             />
                                         </div>
-                                        <div style={{ width: '50%', padding: '15px' }}>
+                                        <div style={{ width: '33%', padding: '15px' }}>
+                                            { variant.img_src != "" && (
+                                            <img src={variant.img_src} style={{ width: '120px', height: '100px', border: '1px solid black' }}
+                                            />
+                                            )}
+                                        </div>
+                                        <div style={{ width: '33%', padding: '15px' }}>
                                             <TextField
                                                 type="number"
                                                 readOnly={isReadOnly}
