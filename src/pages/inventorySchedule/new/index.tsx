@@ -388,7 +388,7 @@ export default function NewSettings() {
         <div style={{ maxWidth: "70%", display: 'flex', justifyContent: 'center', margin: '25px', marginLeft: 'auto', marginRight: 'auto', overflow: 'visible' }}>
             <Card padding={800} >
                 <div style={{ width: '4000px', maxWidth: '100%' }}>
-                    <a className='back-button' href='/blackoutSettings' style={{ position: 'absolute', display: 'flex', textDecoration: 'none' }}>
+                    <a className='back-button' href='/inventorySchedule' style={{ position: 'absolute', display: 'flex', textDecoration: 'none' }}>
                         <Icon
                             source={MobileBackArrowMajor}
                             tone="base"
