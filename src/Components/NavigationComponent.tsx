@@ -9,22 +9,28 @@ export default function NavigationComponent({url}) {
         <Navigation.Section
           items={[
             {
-              url: '/recipes',
-              label: 'Recipes',
+              url: '/locations',
+              label: 'Locations',
               icon: VocabularyMajor,
-              selected: (url.includes('/recipes'))
+              selected: (url.includes('/locations'))
             },
             {
-              url: '/authors',
-              label: 'Authors',
+              url: '/settings',
+              label: 'Settings',
               icon: CustomersMajor,
-              selected: (url.includes('/authors'))
+              selected: (url.includes('/settings'))
             },
             {
-              url: '/ingredients',
-              label: 'Ingredients',
+              url: '/inventorySchedule',
+              label: 'Inventory Schedule',
               icon: FoodMajor,
-              selected: (url.includes('/ingredients'))
+              selected: (url.includes('/inventorySchedule'))
+            },
+            {
+              url: '/blackoutSettings',
+              label: 'BlackoutSetting',
+              icon: FoodMajor,
+              selected: (url.includes('/blackoutSettings'))
             },
           ]}
         />

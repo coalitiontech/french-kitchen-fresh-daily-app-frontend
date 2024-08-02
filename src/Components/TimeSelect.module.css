@@ -1,0 +1,7 @@
+/* components/TimeSelect.module.css */
+.selectContainer {
+  /* Add your custom styles here */
+  width: 80%;
+  margin: 0.5rem 0;
+  color: red;
+}
