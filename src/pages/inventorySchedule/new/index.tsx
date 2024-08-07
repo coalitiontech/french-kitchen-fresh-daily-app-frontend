@@ -10,7 +10,7 @@ import DateTimeSelect from '@/Components/DateTimeSelect';
 import moment from 'moment';
 
 import {
-    MobileBackArrowMajor, SearchIcon
+    ArrowLeftIcon, SearchIcon
 } from '@shopify/polaris-icons';
 
 export default function NewSettings() {
@@ -385,12 +385,13 @@ export default function NewSettings() {
 
     return <Box minHeight='100vh' maxWidth="100%" as='section' background="bg">
         {/* <Frame> */}
-        <div style={{ maxWidth: "70%", display: 'flex', justifyContent: 'center', margin: '25px', marginLeft: 'auto', marginRight: 'auto', overflow: 'visible' }}>
+        <div style={{ maxWidth: "90%", width: '100%', display: 'block', justifyContent: 'center', margin: '25px', marginLeft: 'auto', marginRight: 'auto', overflow: 'visible' }}>
             <Card padding={800} >
-                <div style={{ width: '4000px', maxWidth: '100%' }}>
+                {/* <div style={{ width: '4000px', maxWidth: '100%' }}> */}
+                <div style={{ width: '100%', maxWidth: '100%' }}>
                     <a className='back-button' href='/inventorySchedule' style={{ position: 'absolute', display: 'flex', textDecoration: 'none' }}>
                         <Icon
-                            source={MobileBackArrowMajor}
+                            source={ArrowLeftIcon}
                             tone="base"
                         /><span> Back</span>
                     </a>

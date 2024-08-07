@@ -4,7 +4,7 @@ import { useCallback, useEffect, useState } from 'react';
 import axiosInstance from '@/plugins/axios';
 import ButtonEnd from '@/Components/ButtonEnd';
 import {
-    EditMajor,
+    EditIcon,
     ViewMajor
 } from '@shopify/polaris-icons';
 import { parseUrl } from 'next/dist/shared/lib/router/utils/parse-url';
@@ -37,7 +37,7 @@ export default function BlackoutDateTime() {
             let data = response.data.data.map((dt) => {
                 let action = <div className='action-cell'>
                     <a href={`/blackoutSettings/edit/${dt.id}`} >
-                        <Icon source={EditMajor} tone="base" />
+                        <Icon source={EditIcon} tone="base" />
                     </a>
                 </div>
 
@@ -103,7 +103,7 @@ export default function BlackoutDateTime() {
             let data = response.data.data.map((dt) => {
                 let action = <div className='action-cell'>
                     <a href={`/blackoutSettings/edit/${dt.id}`} >
-                        <Icon source={EditMajor} tone="base" />
+                        <Icon source={EditIcon} tone="base" />
                     </a>
                 </div>
 
@@ -152,7 +152,7 @@ export default function BlackoutDateTime() {
  
     return <Box minHeight='100vh' maxWidth="100%" as='section' background="bg">
         <div style={{ display: 'flex', justifyContent: 'center' }}>
-            <div style={{ maxWidth: "90%", display: 'flex', justifyContent: 'center', margin: '25px' }}>
+            <div style={{ maxWidth: "90%", width: '100%', display: 'block', justifyContent: 'center', margin: '25px' }}>
                 <Card padding={800} >
                    
                     <div style={{ marginBottom: "10px" }}>

@@ -4,7 +4,7 @@ import { useCallback, useEffect, useState } from 'react';
 import axiosInstance from '@/plugins/axios';
 import ButtonEnd from '@/Components/ButtonEnd';
 import {
-    EditMajor,
+    EditIcon,
     ViewMajor
 } from '@shopify/polaris-icons';
 import { parseUrl } from 'next/dist/shared/lib/router/utils/parse-url';
@@ -60,7 +60,7 @@ export default function Settings() {
             let data = response.data.data.map((dt) => {
                 let action = <div className='action-cell'>
                     <a href={`/settings/edit/${dt.id}`} >
-                        <Icon source={EditMajor} tone="base" />
+                        <Icon source={EditIcon} tone="base" />
                     </a>
                 </div>
                     const decodedConfig = JSON.parse(dt.minimum_cart_contents_config); 
@@ -108,12 +108,14 @@ export default function Settings() {
  
     return <Box minHeight='100vh' maxWidth="100%" as='section' background="bg">
         <div style={{ display: 'flex', justifyContent: 'center' }}>
-            <div style={{ maxWidth: "90%", display: 'flex', justifyContent: 'center', margin: '25px' }}>
+            <div style={{ maxWidth: "90%", width: '100%', display: 'block', justifyContent: 'center', margin: '25px' }}>
                 <Card padding={800} >
                     <div style={{ marginBottom: "10px" }}>
                         <Text variant="heading3xl" alignment="center" as={'h1'} >Settings</Text>
                     </div>
+                    <div style={{display: 'flex', justifyContent: 'flex-end'}}>
                     <Button onClick={onClickActionHandler} onTitleFilterChanges={onTitleFilterChangesHandler} buttonName={'New Settings'}>New Settings</Button>
+                    </div>
                     {/* <div style={{ marginBottom: "10px", display: 'flex', justifyContent: 'end' }} > */}
                      
                     {/* </div> */}

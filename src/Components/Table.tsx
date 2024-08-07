@@ -47,7 +47,8 @@ export default function Table({ tableData, headings, resourceName, paginationDat
     return (
         // <Page title="Sales by product">
         <div style={{ display: 'flex', justifyContent: 'center' }}>
-            <div style={{ width: '4000px' }}>
+            {/* <div style={{ width: '4000px' }}> */}
+            <div style={{ width: '100%' }}>
                 <IndexTable
                     resourceName={resourceName}
                     itemCount={tableData.length}

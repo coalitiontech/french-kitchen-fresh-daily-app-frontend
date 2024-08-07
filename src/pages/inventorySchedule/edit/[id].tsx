@@ -8,7 +8,7 @@ import ShopifyVariantSelect from "@/Components/ShopifyVariantSelect";
  
 import DateTimeSelect from '@/Components/DateTimeSelect';
 import {
-    MobileBackArrowMajor
+    ArrowLeftIcon
 } from '@shopify/polaris-icons';
 import { useRouter } from 'next/router';
 import QuillJs from '@/Components/QuillJs';
@@ -366,12 +366,13 @@ export default function EditSettings() {
 
     return !isLoading && <Box minHeight='100vh' maxWidth="100%" as='section' background="bg">
         {/* <Frame> */}
-        <div style={{ maxWidth: "70%", display: 'flex', justifyContent: 'center', margin: '25px', marginLeft: 'auto', marginRight: 'auto' }}>
+        <div style={{ maxWidth: "90%", display: 'block', justifyContent: 'center', margin: '25px', marginLeft: 'auto', marginRight: 'auto' }}>
             <Card padding={800} >
-                <div style={{ width: '4000px', maxWidth: '100%' }}>
+                {/* <div style={{ width: '4000px', maxWidth: '100%' }}> */}
+                <div style={{ width: '100%' }}>
                     <a className='back-button' href='/inventorySchedule' style={{ position: 'absolute', display: 'flex', textDecoration: 'none' }}>
                         <Icon
-                            source={MobileBackArrowMajor}
+                            source={ArrowLeftIcon}
                             tone="base"
                         /><span> Back</span>
                     </a>

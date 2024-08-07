@@ -1,5 +1,5 @@
 import {Frame, Navigation} from '@shopify/polaris';
-import {HomeMinor, CustomersMajor, FoodMajor, VocabularyMajor} from '@shopify/polaris-icons';
+import { ProfileIcon, FoodIcon, BookOpenIcon} from '@shopify/polaris-icons';
 import React from 'react';
 
 export default function NavigationComponent({url}) {
@@ -11,25 +11,25 @@ export default function NavigationComponent({url}) {
             {
               url: '/locations',
               label: 'Locations',
-              icon: VocabularyMajor,
+              icon: BookOpenIcon,
               selected: (url.includes('/locations'))
             },
             {
               url: '/settings',
               label: 'Settings',
-              icon: CustomersMajor,
+              icon: ProfileIcon,
               selected: (url.includes('/settings'))
             },
             {
               url: '/inventorySchedule',
               label: 'Inventory Schedule',
-              icon: FoodMajor,
+              icon: FoodIcon,
               selected: (url.includes('/inventorySchedule'))
             },
             {
               url: '/blackoutSettings',
               label: 'BlackoutSetting',
-              icon: FoodMajor,
+              icon: FoodIcon,
               selected: (url.includes('/blackoutSettings'))
             },
           ]}
