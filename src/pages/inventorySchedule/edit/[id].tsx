@@ -1,18 +1,13 @@
-import ButtonEnd from '@/Components/ButtonEnd';
 import { Box, Card, Text, TextField, Button, Toast, Divider, Icon, Select, Modal, LegacyCard, LegacyStack, Collapsible, Link, Autocomplete, Checkbox, Tag } from '@shopify/polaris';
 import { useCallback, useEffect, useState } from 'react';
 import axiosInstance from '@/plugins/axios';
-import { DatePicker } from '@shopify/polaris';
-import TimeSelect from '@/Components/TimeSelect'; 
-import ShopifyVariantSelect from "@/Components/ShopifyVariantSelect";
- 
 import DateTimeSelect from '@/Components/DateTimeSelect';
 import {
     ArrowLeftIcon
 } from '@shopify/polaris-icons';
 import { useRouter } from 'next/router';
-import QuillJs from '@/Components/QuillJs';
-import ShopifyProductsSelect from "@/Components/ShopifyProductsSelect";
+import StatusSwitch from '../../../Components/Switch';
+import moment from 'moment';
 
 export default function EditSettings() {
 
@@ -20,51 +15,41 @@ export default function EditSettings() {
     const [errors, setErrors] = useState({})
     const [active, setActive] = useState(false);
 
-    const [selectedDate, setSelectedDate] = useState(new Date())
-
     const [isLoading, setIsLoading] = useState(true)
 
-    const [productinputValue, setProductInputValue] = useState('');
-    const [selectedProduct, setSelectedProduct] = useState(null);
+    const [selectedProduct, setSelectedProduct] = useState('');
     const [productVariants, setProductVariants] = useState([]);
-    const [variantSelections, setVariantSelections] = useState({});
-    const [isReadOnly, setIsReadOnly] = useState(false);
-    
+
     const router = useRouter();
     const processId = router.query.id
-    
+
+    const [productinputValue, setProductInputValue] = useState('');
+    const [productSelectedOptions, setProductSelectedOptions] = useState<string[]>([]);
+
     /****************************************************************************/
-    
+
     useEffect(() => {
         if (processId) {
 
             axiosInstance.get(`/api/inventorySchedule/${processId}`).then((response) => {
-                 
                 const dt = response.data;
                 setSelectedProduct(dt.shopify_product_id);
-                
                 setValues({
                     quantity: dt.quantity,
                     stock_datetime: dt.stock_datetime,
+                    starting_date: moment(dt.starting_date).format('YYYY-MM-DD HH:mm:ss'),
+                    stock_time: moment(`${dt.starting_date} ${dt.stock_time}`).format('YYYY-MM-DD HH:mm:ss'),
                     overwrite_stock: dt.overwrite_stock ? true : false,
                     is_active: dt.is_active == 1 ? true : false,
-                    recurring_config: dt.recurring_config ? dt.recurring_config : { type: '', days: [] }, 
+                    recurring_config: dt.recurring_config ? dt.recurring_config : { type: '', days: [] },
                     shopify_product_id: dt.shopify_product_id,
                     variant_config: dt.variant_config,
                 })
 
-                const initialVariantSelections = {};
-                for (const variantId in dt.variant_config) {
-                    initialVariantSelections[variantId] = {
-                        selected: true,
-                        quantity: dt.variant_config[variantId].quantity
-                    };
-                }
-                setVariantSelections(initialVariantSelections);
-
+                setProductSelectedOptions([dt.shopify_product_id]);
                 setIsLoading(false)
             })
-              
+
         }
     }, [processId])
 
@@ -84,10 +69,8 @@ export default function EditSettings() {
     ) : null;
 
     const onSaveAndKeepEditingHandler = useCallback(() => {
-       
+
         axiosInstance.put(`/api/inventorySchedule/${processId}`, values).then((response) => {
-            values.variant_config = JSON.stringify(values.variant_config);
-            values.recurring_config = JSON.stringify(values.recurring_config);
             setErrors({})
             setActive(true)
         }).catch((response) => {
@@ -112,15 +95,12 @@ export default function EditSettings() {
         })
     }, [values])
 
-    const onClickActionHandler = () => { 
-        values.variant_config = JSON.stringify(values.variant_config);
-        values.recurring_config = JSON.stringify(values.recurring_config);
-        
+    const onClickActionHandler = () => {
         axiosInstance.put(`/api/inventorySchedule/${processId}`, values).then((response) => {
             window.location.href = `/inventorySchedule`
         }).catch((response) => {
             const error = response.response.data.errors
-             
+
             const err = {}
             Object.keys(error).map((key) => {
                 err[key] = <ul key={key} style={{ margin: 0, listStyle: 'none', padding: 0 }}>
@@ -141,61 +121,64 @@ export default function EditSettings() {
         });
     }
 
-     /***************************************************************************** */
-    
-     const [productDeselectedOptions, setProductDeselectedOptions] = useState([]);     
-     const [productOptions, setProductOptions] = useState(productDeselectedOptions); 
-     const [productSelectedOptions, setProductSelectedOptions] = useState<string[]>([]);
-     const [productOptionsLabel, setProductOptionsLabel] = useState<string[]>([]);
- 
+    /***************************************************************************** */
+
+    const [productOptions, setProductOptions] = useState([{ label: 'None', value: '' }]);
+    const [productOptionsLabel, setProductOptionsLabel] = useState<string[]>([]);
+
     useEffect(() => {
         axiosInstance.get('/api/select/singleShopifyProduct?title=' + productinputValue).then((response) => {
-            setProductDeselectedOptions([{ label: 'None', value: '' }, ...response.data.selectData])
             setProductOptions([{ label: 'None', value: '' }, ...response.data.selectData]);
             setProductOptionsLabel(response.data.optionsLabel);
-            console.log(response.data);
         })
     }, [productinputValue]);
- 
+
     const updateCatText = useCallback(
         (value: string) => {
-             setProductInputValue(value);
+            setProductInputValue(value);
         },
         [],
     );
- 
+
     const updateProductSelection = useCallback(
- 
+
         (selected: string[]) => {
             const selectedValue = selected.map((selectedItem) => {
                 const matchedOption = productOptions.find((option) => {
                     setValues((prevValues) => ({
-                    ...prevValues,
-                    'shopify_product_id': selectedItem
+                        ...prevValues,
+                        'shopify_product_id': selectedItem
                     }));
 
                     updateCatText('');
                     return option.value.match(selectedItem);
                 });
                 setSelectedProduct(selectedItem);
+                setValues(prevValues => {
+
+                    return {
+                        ...prevValues,
+                        variant_config: {}
+                    };
+                });
                 return matchedOption && matchedOption.label;
             });
-            
+
             setProductSelectedOptions(selected);
-            setProductInputValue(selectedValue[0] || '');
+            setProductInputValue('');
         },
         [productOptions],
     );
-    
+
     let productVerticalContentMarkup =
         values.shopify_product_id > 0 ? (
-        <LegacyStack spacing="extraTight" alignment="center">
-            <Tag key={values.shopify_product_id} >
-                {productOptionsLabel[values.shopify_product_id]}
-            </Tag>
-        </LegacyStack>
-    ) : null;
-    
+            <LegacyStack spacing="extraTight" alignment="center">
+                <Tag key={values.shopify_product_id} >
+                    {productOptionsLabel[values.shopify_product_id]}
+                </Tag>
+            </LegacyStack>
+        ) : null;
+
     const productTextField = (
         <Autocomplete.TextField
             onChange={updateCatText}
@@ -207,48 +190,34 @@ export default function EditSettings() {
             name="shopify_product_id"
             label="Shopify Product"
             key="shopify_product_id"
-            initialValue={values.shopify_product_id}
         />
     );
- 
-    /********************************************************************************/ 
- 
+
+    /********************************************************************************/
+
     const [numberOfProductVariants, setNumberOfProductVariants] = useState(0);
-    
+
     useEffect(() => {
-        if (selectedProduct != '' || values.variant_config != '') {
-            axiosInstance.get(`/api/select/productVariant/${selectedProduct}`)
-                .then((response) => {
-                    if (response.data) {
-                        setProductVariants(response.data.selectData);
-                        setNumberOfProductVariants(response.data.selectData.length);
-                        
-                        if(response.data.selectData.length > 1)
-                        {
-                            setIsReadOnly(true); 
+        if (values.variant_config != '') {
+            if (selectedProduct != '') {
+                axiosInstance.get(`/api/select/productVariant/${selectedProduct}`)
+                    .then((response) => {
+                        if (response.data) {
+                            setProductVariants(response.data.selectData);
+                            setNumberOfProductVariants(response.data.selectData.length);
                         }
-                         
-                    }
-                    
-                })
-                .catch((error) => {
-                    console.error('Error fetching product variants:', error);
-                });
+
+                    })
+                    .catch((error) => {
+                        console.error('Error fetching product variants:', error);
+                    });
+            }
         }
     }, [selectedProduct]);
 
-     
+
     const handleVariantChange = useCallback((variantId, event, quantity) => {
-        console.log(variantId+' val= '+event);
         const checked = event;
-        setVariantSelections(prevSelections => ({
-            ...prevSelections,
-            [variantId]: {
-                ...prevSelections[variantId],
-                selected: checked,
-                quantity: Number(quantity)
-            }
-        }));
 
         setValues(prevValues => {
             const updatedVariantConfig = { ...prevValues.variant_config };
@@ -270,14 +239,6 @@ export default function EditSettings() {
     }, []);
 
     const handleQuantityChange = (variantId, quantity) => {
-        setVariantSelections(prevSelections => ({
-            ...prevSelections,
-            [variantId]: {
-                ...prevSelections[variantId],
-                quantity: Number(quantity)
-            }
-        }));
-
         setValues((prevValues) => ({
             ...prevValues,
             quantity: Number(quantity),
@@ -290,8 +251,7 @@ export default function EditSettings() {
             }
         }));
 
-        if(numberOfProductVariants == 1 )
-        {
+        if (numberOfProductVariants == 1) {
             setValues((prevValues) => ({
                 ...prevValues,
                 quantity: Number(quantity),
@@ -303,33 +263,21 @@ export default function EditSettings() {
                     }
                 }
             }));
-            
+
         }
     };
 
     const handleChange = (variantId, e) => {
-        
+
         const value = e;
         handleQuantityChange(variantId, value);
     };
 
-
-    // Function to get the final output structure
-    const getFinalVariantData = () => {
-        const finalData = {};
-        const variantSelections = values.variant_config || {};
-        for (const variantId in variantSelections) {
-            if (variantSelections[variantId].selected) {
-                finalData[variantId] = { quantity: variantSelections[variantId].quantity };
-            }
-        }
-        return finalData;
-    };
-
     const recurringOptions = [
-        {label: 'Daily', value: 'Daily'},
-        {label: 'Per Week', value: 'Per Week'},
-      ];
+        { label: 'Does not repeat', value: 'dnr' },
+        { label: 'Daily', value: 'Daily' },
+        { label: 'Per Week', value: 'Per Week' },
+    ];
     const daysOfWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
     const handleRecurringConfigChange = (e) => {
@@ -345,7 +293,6 @@ export default function EditSettings() {
     };
 
     const handleDaysChange = (day) => {
-        console.log('day - '+day)
         setValues((prevValues) => {
             const newDays = prevValues.recurring_config.days.includes(day)
                 ? prevValues.recurring_config.days.filter(d => d !== day)
@@ -360,9 +307,8 @@ export default function EditSettings() {
             };
         });
     };
- 
+
     /** ************************************************************************ */
- 
 
     return !isLoading && <Box minHeight='100vh' maxWidth="100%" as='section' background="bg">
         {/* <Frame> */}
@@ -377,115 +323,75 @@ export default function EditSettings() {
                         /><span> Back</span>
                     </a>
                     <div style={{ marginBottom: "10px" }}>
-                        <Text variant="heading3xl" alignment="center" as={'h1'} >Edit Inventory Schedule</Text>
+                        <Text variant="heading2xl" alignment="center" as={'h1'} >Edit Inventory Schedule</Text>
                     </div>
-                     
+
                     <div style={{ width: '100%', display: 'flex' }}>
 
-                        <div style={{ width: '30%', padding: '15px' }}>
+                        <div style={{ width: '70%', padding: '15px' }}>
                             <Autocomplete
                                 title="Product"
                                 options={productOptions}
                                 error={errors.name}
-                                selected={values.shopify_product_id}
+                                selected={productSelectedOptions}
                                 textField={productTextField}
                                 onSelect={updateProductSelection}
                                 listTitle="Suggested Products"
                                 fieldName="shopify_product_id"
                                 fieldKey="shopify_product_id"
-                                initialValue={values.shopify_product_id}
-                            /> 
+                            />
                         </div>
 
-                        {/* {productVariants.length > 0 && selectedProduct !== '' && ( */}
-                        { values.variant_config !== '' && (
-                            <div style={{ width: '70%' }}>
-                                <h3>Product Variants</h3>
-                                {productVariants.map((variant) => (
-                                    <div key={variant.id} style={{ display: 'flex', alignItems: 'center', marginBottom: '10px',width: '80%',padding: '10px' }}>
-                                        <div style={{ width: '33%', padding: '15px' }}>
+                        <div style={{ width: '15%', padding: '15px' }}>
+                            <h3>Active</h3>
+                            <StatusSwitch status={values.is_active} arrayKey={'is_active'} changeStatus={onValuesChange} />
+                        </div>
+                        <div style={{ width: '15%', padding: '15px' }}>
+                            <h3> Overwrite Stock</h3>
+                            <StatusSwitch status={values.overwrite_stock} arrayKey={'overwrite_stock'} changeStatus={onValuesChange} />
+                        </div>
+                    </div>
+
+                    {values.variant_config !== '' && (
+                        <div style={{ width: '100%' }}>
+                            <h3 style={{ padding: '15px' }}>Product Variants</h3>
+                            <div style={{ display: 'grid', alignItems: 'center', marginBottom: '10px', padding: '10px', gridTemplateColumns: 'repeat(4, 1fr)' }}>
+                                {productVariants.map((variant) => {
+                                    return <div key={variant.id} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: '15px' }}>
+                                        <div style={{ padding: '5px' }}>
+                                            {variant.img_src != "" && (
+                                                <img src={variant.img_src} style={{ width: '120px', height: '100px', border: '1px solid black', padding: '15px', borderRadius: '15px' }}
+                                                />
+                                            )}
+                                        </div>
+                                        <div style={{ padding: '5px' }}>
                                             <Checkbox
                                                 label={variant.title}
                                                 type="checkbox"
                                                 id={`variant-${variant.id}`}
-                                                checked={variantSelections[variant.id]?.selected || false}
+                                                checked={values.variant_config?.[variant.id]?.selected || false}
                                                 onChange={(e) => handleVariantChange(variant.id, e, variant.quantity)}
                                                 style={{ marginRight: '10px' }}
                                             />
                                         </div>
-                                        <div style={{ width: '33%', padding: '15px' }}>
-                                            { variant.img_src != "" && (
-                                            <img src={variant.img_src} style={{ width: '120px', height: '100px', border: '1px solid black' }}
-                                            />
-                                            )}
-                                        </div>
-                                        <div style={{ width: '33%', padding: '15px' }}>
+                                        <div style={{ padding: '5px' }}>
                                             <TextField
                                                 type="number"
-                                                readOnly={isReadOnly}
+                                                readOnly={!values.variant_config?.[variant.id]?.selected}
                                                 placeholder="Quantity"
                                                 value={values.variant_config?.[variant.id]?.quantity || ''}
                                                 onChange={(e) => handleChange(variant.id, e)}
-                                            />  
+                                            />
                                         </div>
                                     </div>
-                                ))}
+                                })}
                             </div>
-                        )}
-                        
-                         
-                    </div>
+                        </div>
+                    )}
+
                     <div style={{ width: '100%', display: 'flex' }}>
-                        <div style={{ width: '33%', padding: '15px' }}>
-                            <h3> Active</h3>
-                            <input 
-                                type="radio"
-                                name="is_active"
-                                error={errors.is_active}
-                                checked={values.is_active === true}
-                                onChange={() => {
-                                    onValuesChange(true, 'is_active')
-                                }}
-                            />
-                            <label htmlFor="on">Enable</label>
-
-                            <input
-                                type="radio"
-                                name="is_active"
-                                error={errors.is_active}
-                                checked={values.is_active === false}
-                                onChange={() => {
-                                    onValuesChange(false, 'is_active')
-                                }}
-                            /> 
-                            <label htmlFor="off">Disable</label>
-
-                        </div>
-                        <div style={{ width: '33%', padding: '15px' }}>
-                        <h3> Overwrite Stock</h3>
-                            <input
-                                type="radio"
-                                name="overwrite_stock"
-                                error={errors.overwrite_stock}
-                                checked={values.overwrite_stock === true}
-                                onChange={() => {
-                                    onValuesChange(true, 'overwrite_stock')
-                                }}
-                            />
-                            <label htmlFor="overwrite_stock">True</label>
-                                <input
-                                    type="radio"
-                                    name="overwrite_stock"
-                                    error={errors.overwrite_stock}
-                                    checked={values.overwrite_stock === false}
-                                    onChange={() => {
-                                        onValuesChange(false, 'overwrite_stock')
-                                    }}
-                                />
-                            <label htmlFor="overwrite_stock">False</label>
-                        </div>
-                        <div style={{ width: '33%', padding: '15px' }}>
-                            <DateTimeSelect 
+                        {/* <div style={{ width: '25%', padding: '15px' }}>
+                            <DateTimeSelect
                                 label="Stock Datetime"
                                 name="stock_datetime"
                                 value={values.stock_datetime}
@@ -493,48 +399,68 @@ export default function EditSettings() {
                                 onChange={(value) => {
                                     onValuesChange(value, 'stock_datetime')
                                 }}
-                                style={{ width:"30%", overflow: "visible" }}
+                                style={{ width: "30%", overflow: "visible" }}
                             />
-                        </div> 
-                        
-                    </div>
-                    <div style={{ width: '100%', display: 'flex' }}>
-                        <div style={{ width: '33%', padding: '15px' }}>
-                            {/* <TextField 
-                                label="Recurring Config"
-                                name="recurring_config"
-                                min="0"
-                                value={values.recurring_config}
-                                autoComplete="off"
-                                onChange={(value) => {
-                                    onValuesChange(value, 'recurring_config')
-                                }}
-                                style={{ width:"30%" }}
-                            /> */}
-                             
+                        </div> */}
+                        <div style={{ width: '50%', padding: '15px' }}>
                             <Select
                                 label="Recurring Config"
                                 options={recurringOptions}
                                 onChange={handleRecurringConfigChange}
                                 value={values.recurring_config ? values.recurring_config.type : ''}
-                            />   
-                        </div> 
-                        { values.recurring_config != '' && values.recurring_config != null && values.recurring_config.type === 'Per Week' && (
-                            <div style={{ width: '33%', padding: '15px' }}>
-                                {daysOfWeek.map(day => (
-                                    <Checkbox
-                                        label={day}
-                                        type="checkbox"
-                                        id={day}
-                                        checked={values.recurring_config.days.includes(day)}
-                                        onChange={() => handleDaysChange(day)}
-                                        style={{ marginRight: '10px' }}
-                                    />                                       
-                                ))}
-                            </div>
-                        )}
+                            />
+                            {values.recurring_config != '' && values.recurring_config != null && values.recurring_config.type === 'Per Week' && (
+                                <div className='week-days-section'>
+                                    {daysOfWeek.map((day, index) => (
+                                        <Checkbox
+                                            key={index}
+                                            label={day}
+                                            type="checkbox"
+                                            id={day}
+                                            checked={values.recurring_config.days.includes(day)}
+                                            onChange={() => handleDaysChange(day)}
+                                            style={{ marginRight: '10px' }}
+                                        />
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+                        <div style={{ width: '25%', padding: '15px' }}>
+                            <DateTimeSelect
+                                label={values.recurring_config.type === 'dnr' ? "Stock Date" : "Starting Date"}
+                                name="starting_date"
+                                value={values.starting_date}
+                                isDate={true}
+                                isTime={false}
+                                format='YYYY-MM-DD'
+                                initialViewMode="days"
+                                autoComplete="off"
+                                onChange={(value) => {
+                                    onValuesChange(value, 'starting_date')
+                                }}
+                                style={{ width: "30%", overflow: "visible" }}
+                            />
+                        </div>
+
+                        <div style={{ width: '25%', padding: '15px' }}>
+                            <DateTimeSelect
+                                label="Stock Time"
+                                name="stock_time"
+                                value={values.stock_time}
+                                autoComplete="off"
+                                isDate={false}
+                                isTime={true}
+                                format='HH:mm:ss'
+                                initialViewMode="time"
+                                onChange={(value) => {
+                                    onValuesChange(value, 'stock_time')
+                                }}
+                                style={{ width: "30%", overflow: "visible" }}
+                            />
+                        </div>
+
                     </div>
-                     <Divider borderColor="border" />
+                    <Divider borderColor="border" />
 
                     <div style={{ marginBottom: "10px", marginTop: "10px", display: 'flex', justifyContent: 'end' }} >
                         <div style={{ marginRight: '10px' }}><Button loading={active} onClick={onSaveAndKeepEditingHandler}>Save & Keep Editing</Button></div>

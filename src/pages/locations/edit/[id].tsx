@@ -121,7 +121,6 @@ export default function EditLocations() {
         setValues((prevValues) => {
             const newData = { ...prevValues.minimum_cart_contents_config };
             const valuesCartBkp = { ...prevValues };
-            console.log('newdata', newData);
 
             if (!newData[type]) {
                 newData[type] = {};
@@ -141,7 +140,6 @@ export default function EditLocations() {
 
             axiosInstance.get(`/api/shopifyLocation/${processId}`).then((response) => {
                 const dt = response.data;
-                console.log(dt);
                 const mergedData = { ...initialData, ...dt.timeslot_config };
                 const mergedCartConfigData = { ...initialCartConfigData, ...dt.minimum_cart_contents_config };
 
@@ -177,6 +175,7 @@ export default function EditLocations() {
         setValues((prevValue) => {
             let valueBkp = { ...prevValue }
 
+            console.log(valueBkp.product_eligibility.delivery);
             if (name == 'product_eligibility_delivery') {
                 valueBkp.product_eligibility.delivery = value
             } else if (name == 'product_eligibility_pickup') {
@@ -227,7 +226,6 @@ export default function EditLocations() {
             window.location.href = `/locations`
         }).catch((response) => {
             const error = response.response.data.errors
-            console.log('in errors= '.error)
             const err = {}
             Object.keys(error).map((key) => {
                 err[key] = <ul key={key} style={{ margin: 0, listStyle: 'none', padding: 0 }}>
@@ -261,7 +259,7 @@ export default function EditLocations() {
                         /><span> Back</span>
                     </a>
                     <div style={{ marginBottom: "10px" }}>
-                        <Text variant="heading3xl" alignment="center" as={'h1'} >Edit Location</Text>
+                        <Text variant="heading2xl" alignment="center" as={'h1'} >Edit Location</Text>
                     </div>
                     <div style={{ marginBottom: "10px", display: 'flex', justifyContent: 'end' }} >
                         <div style={{ width: '100%', display: 'flex' }}>

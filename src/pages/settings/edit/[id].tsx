@@ -54,7 +54,6 @@ export default function EditSettings() {
         if (processId) {
 
             axiosInstance.get(`/api/settings/${processId}`).then((response) => {
-                console.log('data=', response.data)
                 const dt = response.data;
                 const mergedCartConfigData = { ...initialCartConfigData, ...dt.minimum_cart_contents_config };
 
@@ -63,7 +62,6 @@ export default function EditSettings() {
                 })
                 setIsLoading(false)
             })
-            console.log('values data=', values.minimum_cart_contents_config);
              
         }
     }, [processId])
@@ -85,7 +83,7 @@ export default function EditSettings() {
 
     const onSaveAndKeepEditingHandler = useCallback(() => {
 
-        values.minimum_cart_contents_config = JSON.stringify(values.minimum_cart_contents_config);
+        // values.minimum_cart_contents_config = JSON.stringify(values.minimum_cart_contents_config);
 
         axiosInstance.put(`/api/settings/${processId}`, values).then((response) => {
             setErrors({})
@@ -114,7 +112,7 @@ export default function EditSettings() {
 
     const onClickActionHandler = () => { 
 
-        values.minimum_cart_contents_config = JSON.stringify(values.minimum_cart_contents_config);
+        // values.minimum_cart_contents_config = JSON.stringify(values.minimum_cart_contents_config);
 
         axiosInstance.put(`/api/settings/${processId}`, values).then((response) => {
             window.location.href = `/settings`
@@ -154,7 +152,7 @@ export default function EditSettings() {
                         /><span> Back</span>
                     </a>
                     <div style={{ marginBottom: "10px" }}>
-                        <Text variant="heading3xl" alignment="center" as={'h1'} >Edit Setting</Text>
+                        <Text variant="heading2xl" alignment="center" as={'h1'} >Edit Setting</Text>
                     </div>
                      
                     

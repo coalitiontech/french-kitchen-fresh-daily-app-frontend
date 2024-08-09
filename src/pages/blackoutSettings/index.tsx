@@ -5,6 +5,7 @@ import axiosInstance from '@/plugins/axios';
 import ButtonEnd from '@/Components/ButtonEnd';
 import {
     EditIcon,
+    SkeletonIcon,
     ViewMajor
 } from '@shopify/polaris-icons';
 import { parseUrl } from 'next/dist/shared/lib/router/utils/parse-url';
@@ -32,58 +33,14 @@ export default function BlackoutDateTime() {
         plural: 'blackoutDateTimes',
     };
 
-    useEffect(() => {
-        axiosInstance.get('/api/blackoutDateTime').then((response) => {
-            let data = response.data.data.map((dt) => {
-                let action = <div className='action-cell'>
-                    <a href={`/blackoutSettings/edit/${dt.id}`} >
-                        <Icon source={EditIcon} tone="base" />
-                    </a>
-                </div>
-
-                return {
-                    id: dt.id,
-                    start_time: dt.start_time ? dt.start_time : '-',
-                    end_time: dt.end_time ? dt.end_time : '-',
-                    start_date: dt.start_date ? dt.start_date : '-',
-                    end_date: dt.end_date ? dt.end_date : '-',
-                    status: dt.status == 1 ? 'Enable' : 'Disable',
-                    apply_to_all_locations: (dt.apply_to_all_locations == 1 && dt.apply_to_all_locations != '') ? 'True' : 'False',
-                    action: action
-                }
-            })
-            const responseData = response.data
-            
-            const format = new Intl.NumberFormat()
-
-            const paginationData = {
-                current_page: responseData.current_page,
-                first_page_url: responseData.first_page_url,
-                last_page: responseData.last_page,
-                last_page_url: responseData.last_page_url,
-                next_page_url: responseData.next_page_url,
-                prev_page_url: responseData.prev_page_url,
-                from: format.format(responseData.from),
-                to: format.format(responseData.to),
-                total: format.format(responseData.total),
-                per_page: responseData.per_page
-            }
-
-            setBlackoutDateTime(data);
-            setPagination(paginationData)
-            setLoading(false)
-        })
-    }, [])
-
     const onClickActionHandler = useCallback(() => {
-       
         window.location.href = `/blackoutSettings/new`
     }, [])
 
     const onFilterChangesHandler = (filter) => {
         setFilters((prevValue) => {
-            if(prevValue['name']){
-                return {...{'name': prevValue['name']}, ...filter}
+            if (prevValue['name']) {
+                return { ...{ 'name': prevValue['name'] }, ...filter }
             }
             return { ...filter };
         })
@@ -99,7 +56,6 @@ export default function BlackoutDateTime() {
         let currentFilter = '?' + new URLSearchParams(filters).toString();
 
         axiosInstance.get('/api/blackoutDateTime' + currentFilter).then((response) => {
-             
             let data = response.data.data.map((dt) => {
                 let action = <div className='action-cell'>
                     <a href={`/blackoutSettings/edit/${dt.id}`} >
@@ -113,8 +69,8 @@ export default function BlackoutDateTime() {
                     end_time: dt.end_time ? dt.end_time : '-',
                     start_date: dt.start_date ? dt.start_date : '-',
                     end_date: dt.end_date ? dt.end_date : '-',
-                    status: dt.status == 1 ? 'Enable' : 'Disable',
-                    apply_to_all_locations: (dt.apply_to_all_locations == 1 && dt.apply_to_all_locations != '') ? 'True' : 'False',
+                    status: dt.status == 1 ? <div className='toggle-vip'><Icon source={SkeletonIcon} tone="success" /></div> : <div className='toggle-vip'><Icon source={SkeletonIcon} tone="critical" /></div>,
+                    apply_to_all_locations: (dt.apply_to_all_locations == 1 && dt.apply_to_all_locations != '') ? <div className='toggle-vip'><Icon source={SkeletonIcon} tone="success" /></div> : <div className='toggle-vip'><Icon source={SkeletonIcon} tone="critical" /></div>,
                     action: action
                 }
             })
@@ -134,7 +90,6 @@ export default function BlackoutDateTime() {
                 total: format.format(responseData.total),
                 per_page: responseData.per_page
             }
-           
             setBlackoutDateTime(data);
             setPagination(paginationData)
             setLoading(false)
@@ -149,19 +104,17 @@ export default function BlackoutDateTime() {
             return { ...prevValue, ...searchParams };
         })
     }
- 
+
     return <Box minHeight='100vh' maxWidth="100%" as='section' background="bg">
         <div style={{ display: 'flex', justifyContent: 'center' }}>
             <div style={{ maxWidth: "90%", width: '100%', display: 'block', justifyContent: 'center', margin: '25px' }}>
                 <Card padding={800} >
-                   
                     <div style={{ marginBottom: "10px" }}>
-                        <Text variant="heading3xl" alignment="center" as={'h1'} >BlackoutDateTime</Text>
+                        <Text variant="heading2xl" alignment="center" as={'h1'} >BlackoutDateTime</Text>
                     </div>
-                    <Button onClick={onClickActionHandler} onTitleFilterChanges={onTitleFilterChangesHandler} buttonName={'New BlackoutDateTime'}>New BlackoutDateTime</Button>
-                    {/* <div style={{ marginBottom: "10px", display: 'flex', justifyContent: 'end' }} > */}
-                     
-                    {/* </div> */}
+                    <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '15px' }}>
+                        <Button onClick={onClickActionHandler} onTitleFilterChanges={onTitleFilterChangesHandler} buttonName={'New BlackoutDateTime'}>New BlackoutDateTime</Button>
+                    </div>
                     {!loading &&
                         <Table pageChange={changePageHandle} resourceName={resourceName} headings={headings} tableData={blackoutDateTime} paginationData={pagination} />
                     }

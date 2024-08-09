@@ -3,7 +3,7 @@ import { Box, Card, Text, TextField, Button, Toast, Divider, Icon, Select, Modal
 import { useCallback, useEffect, useState } from 'react';
 import axiosInstance from '@/plugins/axios';
 import { DatePicker } from '@shopify/polaris';
-import TimeSelect from '@/Components/TimeSelect'; 
+import TimeSelect from '@/Components/TimeSelect';
 import {
     ArrowLeftIcon
 } from '@shopify/polaris-icons';
@@ -11,10 +11,13 @@ import { useRouter } from 'next/router';
 import QuillJs from '@/Components/QuillJs';
 import ShopifyProductsSelect from "@/Components/ShopifyProductsSelect";
 
-export default function NewSettings() {
+export default function EditSettings() {
 
-    
+    const [values, setValues] = useState({})
+    const [errors, setErrors] = useState({})
     const [active, setActive] = useState(false);
+
+    const [isEditing, setIsEditing] = useState(false)
 
     const [selectedDate, setSelectedDate] = useState(new Date())
 
@@ -22,27 +25,20 @@ export default function NewSettings() {
 
     const router = useRouter();
     const processId = router.query.id
-     
+
+
     const initialCartConfigData = {
         delivery: { min_items: 0, min_order_total: 0.00 },
         pickup: { min_items: 0, min_order_total: 0.00 }
     };
 
-    const [values, setValues] = useState({
-        minimum_cart_contents_config: initialCartConfigData
-         
-    })
-
-    const [errors, setErrors] = useState({
-        minimum_cart_contents_config: null
-    })
-    
     const handleCartChange = (type, field, value) => {
-       
+
         setValues((prevValues) => {
             const newData = { ...prevValues.minimum_cart_contents_config };
             const valuesCartBkp = { ...prevValues };
-             
+            console.log('newdata', newData);
+
             if (!newData[type]) {
                 newData[type] = {};
             }
@@ -51,82 +47,107 @@ export default function NewSettings() {
 
             return valuesCartBkp;
         });
-        console.log(values);
 
     };
 
-    const onValuesChange = (value, name) => {
 
-        setValues((prevValues) => ({
-            ...prevValues,
-        }));
+    /****************************************************************************/
+    useEffect(() => {
+        if (processId) {
 
+            axiosInstance.get(`/api/settings/${processId}`).then((response) => {
+                const dt = response.data;
+                const mergedCartConfigData = { ...initialCartConfigData, ...dt.minimum_cart_contents_config };
 
-    };
+                setValues({
+                    minimum_cart_contents_config: mergedCartConfigData
+                })
+                setIsLoading(false)
+            })
+
+        }
+    }, [processId])
+
+    const onValuesChange = (value, name, index) => {
+        setValues((prevValue) => {
+            let valueBkp = { ...prevValue }
+            valueBkp[name] = value
+
+            return valueBkp
+        })
+    }
 
     const toastMarkup = active ? (
-        <Toast content="Setting Created Successfully!" onDismiss={() => {
-            setValues({
-                minimum_cart_contents_config: initialCartConfigData
-            })
+        <Toast content="Settings Edited Successfully!" onDismiss={() => {
             setActive(false)
-
         }} />
     ) : null;
 
+    const onSaveAndKeepEditingHandler = useCallback(() => {
 
-    const onSaveAndAddAnotherHandler = useCallback(() => {
-         
-        axiosInstance.post('/api/settings', values).then((response) => {
-            setErrors({
-                minimum_cart_contents_config: null
-            })
+        // values.minimum_cart_contents_config = JSON.stringify(values.minimum_cart_contents_config);
+
+        axiosInstance.put(`/api/settings/${processId}`, values).then((response) => {
+            setErrors({})
             setActive(true)
+            setIsEditing(prevValue => !prevValue)
         }).catch((response) => {
             const error = response.response.data.errors
-            const err = {
-                minimum_cart_contents_config: null
-            }
-
+            const err = {}
             Object.keys(error).map((key) => {
                 err[key] = <ul key={key} style={{ margin: 0, listStyle: 'none', padding: 0 }}>
                     {error[key].map((message, index) => {
-                        return <li key={index} style={{ margin: 0 }}>{message}</li>
+                        let splitedKey = key.split('.');
+                        let fieldTitle = splitedKey[splitedKey.length - 1].replace('_', ' ')
+
+                        if (splitedKey.length > 1) {
+                            return <li key={index} style={{ margin: 0 }}>{message.replace(key, fieldTitle)}</li>
+                        } else {
+                            return <li key={index} style={{ margin: 0 }}>{message}</li>
+                        }
                     })}
                 </ul>
             })
 
-            setErrors({ ...errors, ...err })
+            setErrors({ ...err })
         })
     }, [values])
 
-    const onClickActionHandler = useCallback(() => {
-        axiosInstance.post('/api/settings', values).then((response) => {
+    const onClickActionHandler = () => {
+
+        // values.minimum_cart_contents_config = JSON.stringify(values.minimum_cart_contents_config);
+
+        axiosInstance.put(`/api/settings/${processId}`, values).then((response) => {
             window.location.href = `/settings`
         }).catch((response) => {
             const error = response.response.data.errors
-            const err = {
-                minimum_cart_contents_config: null
-            }
-            
+
+            const err = {}
             Object.keys(error).map((key) => {
                 err[key] = <ul key={key} style={{ margin: 0, listStyle: 'none', padding: 0 }}>
                     {error[key].map((message, index) => {
-                        return <li key={index} style={{ margin: 0 }}>{message}</li>
+                        let splitedKey = key.split('.');
+                        let fieldTitle = splitedKey[splitedKey.length - 1].replace('_', ' ')
+
+                        if (splitedKey.length > 1) {
+                            return <li key={index} style={{ margin: 0 }}>{message.replace(key, fieldTitle)}</li>
+                        } else {
+                            return <li key={index} style={{ margin: 0 }}>{message}</li>
+                        }
                     })}
                 </ul>
             })
 
-            setErrors({ ...errors, ...err })
-        })
-    }, [values])
+            setErrors({ ...err })
+        });
+    }
 
-    return <Box minHeight='100vh' maxWidth="100%" as='section' background="bg">
+    return !isLoading && <Box minHeight='100vh' maxWidth="100%" as='section' background="bg">
         {/* <Frame> */}
-        <div style={{ maxWidth: "90%", width: '100%', display: 'block', justifyContent: 'center', margin: '25px', marginLeft: 'auto', marginRight: 'auto' }}>
+        <div style={{ maxWidth: "90%", display: 'block', justifyContent: 'center', margin: '25px', marginLeft: 'auto', marginRight: 'auto' }}>
             <Card padding={800} >
                 {/* <div style={{ width: '4000px', maxWidth: '100%' }}> */}
-                <div style={{ width: '100%' }}>
+                <div style={{ width: '100%', maxWidth: '100%' }}>
                     <a className='back-button' href='/settings' style={{ position: 'absolute', display: 'flex', textDecoration: 'none' }}>
                         <Icon
                             source={ArrowLeftIcon}
@@ -134,15 +155,16 @@ export default function NewSettings() {
                         /><span> Back</span>
                     </a>
                     <div style={{ marginBottom: "10px" }}>
-                        <Text variant="heading2xl" alignment="center" as={'h1'} >New Setting</Text>
+                        <Text variant="heading2xl" alignment="center" as={'h1'} >Edit Setting</Text>
                     </div>
-                      
-                    <label htmlFor="no_overwrite_stock">Cart Content Config </label>
+
+
+                    <label htmlFor="cart_content">Cart Content Config </label>
 
                     <div style={{ marginBottom: "10px", display: 'flex', justifyContent: 'end' }} >
 
                         <div style={{ width: '100%', display: 'flex' }}>
-                            
+
                             <div style={{ width: '50%', padding: '15px', margin: '10px', border: '1px solid #E3E3E3' }}>
                                 <center>Delivery</center>
                                 <div style={{ width: '100%', display: 'flex' }}>
@@ -155,9 +177,8 @@ export default function NewSettings() {
                                             error={errors.minimum_cart_contents_config}
                                             autoComplete="off"
                                             inputMode='number'
-                                            min='0'
                                             onChange={(value) => handleCartChange('delivery', 'min_items', value)}
-                                              
+                                            readOnly={!isEditing}
                                         />
                                     </div>
                                     <div style={{ width: '50%', padding: '15px' }}>
@@ -167,10 +188,10 @@ export default function NewSettings() {
                                             value={values.minimum_cart_contents_config.delivery.min_order_total}
                                             error={errors.minimum_cart_contents_config}
                                             autoComplete="off"
-                                            min='0'
                                             inputMode='number'
                                             onChange={(value) => handleCartChange('delivery', 'min_order_total', value)}
-                                        /> 
+                                            readOnly={!isEditing}
+                                        />
                                     </div>
                                 </div>
                             </div>
@@ -184,12 +205,12 @@ export default function NewSettings() {
                                             value={values.minimum_cart_contents_config.pickup.min_items}
                                             error={errors.minimum_cart_contents_config}
                                             autoComplete="off"
-                                            min='0'
                                             inputMode='number'
                                             onChange={(value) => handleCartChange('pickup', 'min_items', value)}
+                                            readOnly={!isEditing}
                                         />
-                                    </div> 
-                                   
+                                    </div>
+
                                     <div style={{ width: '50%', padding: '15px' }}>
                                         <TextField
                                             label="Minimum Order Total ($)"
@@ -197,23 +218,28 @@ export default function NewSettings() {
                                             value={values.minimum_cart_contents_config.pickup.min_order_total}
                                             error={errors.min_order_total}
                                             autoComplete="off"
-                                            min='0'
                                             inputMode='number'
                                             onChange={(value) => handleCartChange('pickup', 'min_order_total', value)}
-                                        /> 
+                                            readOnly={!isEditing}
+                                        />
                                     </div>
                                 </div>
                             </div>
 
                         </div>
                     </div>
-                     <Divider borderColor="border" />
+                    <Divider borderColor="border" />
 
                     <div style={{ marginBottom: "10px", marginTop: "10px", display: 'flex', justifyContent: 'end' }} >
-                        <div style={{ marginRight: '10px' }}><Button loading={active} onClick={onSaveAndAddAnotherHandler}>Save & Create Another</Button></div>
-                        <Button loading={active} onClick={onClickActionHandler}>Save</Button>
+                        {
+                            isEditing &&
+                            <div style={{ marginRight: '10px' }}><Button loading={active} onClick={onSaveAndKeepEditingHandler}>Save</Button></div>
+                            ||
+                            <Button loading={active} onClick={() => setIsEditing(prevValue => !prevValue)}>Edit</Button>
+                        }
+                        {/* <Button loading={active} onClick={onClickActionHandler}>Save</Button> */}
                     </div>
-                     
+                    {/* <ButtonEnd onClickAction={onClickActionHandler} buttonName="Create Ingredient" /> */}
                 </div>
             </Card>
             {toastMarkup}
