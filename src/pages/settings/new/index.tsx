@@ -51,8 +51,6 @@ export default function NewSettings() {
 
             return valuesCartBkp;
         });
-        console.log(values);
-
     };
 
     const onValuesChange = (value, name) => {

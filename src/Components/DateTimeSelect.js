@@ -7,7 +7,7 @@ import styles from './DateTimeSelect.module.css';
 
 export default function DateTimeSelect({ label, name, value, onChange, isDate, isTime, initialViewMode, format }) {
   const [isOpen, setIsOpen] = useState(false);
-  const [selectedDate, setSelectedDate] = useState(value ? moment(value).toDate() : new Date());
+  const [selectedDate, setSelectedDate] = useState(value ? moment(value).seconds(0).toDate() : new Date());
 
   useEffect(() => {
     if (value) {
@@ -20,13 +20,13 @@ export default function DateTimeSelect({ label, name, value, onChange, isDate, i
   };
 
   const handleConfirm = () => {
-    const formattedDate = moment(selectedDate).format('YYYY-MM-DD HH:mm:ss');
+    const formattedDate = moment(selectedDate).seconds(0).format('YYYY-MM-DD HH:mm:ss');
     // const formattedDate = moment(selectedDate).format(format);
     onChange(formattedDate);
     setIsOpen(false);
   };
 
-  const formattedDate = moment(selectedDate).format(format);
+  const formattedDate = moment(selectedDate).seconds(0).format(format);
 
   return (
     <div className={styles.datetimeContainer}>
@@ -45,16 +45,17 @@ export default function DateTimeSelect({ label, name, value, onChange, isDate, i
           <Datetime
             className={styles.datetimePicker}
             value={selectedDate}
+            initialViewDate={moment(selectedDate)}
             input={false}
             initialViewMode={initialViewMode}
             timeFormat={isTime}
             dateFormat={isDate}
             onChange={handleDateChange}
             closeOnSelect={true}
-            onNavigate={() => {}}
+            onNavigate={() => { }}
           />
           <button className={styles.confirmButton} onClick={handleConfirm}>Select</button>
-      
+
         </div>
       )}
     </div>

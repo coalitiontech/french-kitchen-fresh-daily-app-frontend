@@ -23,7 +23,8 @@ export default function NewSettings() {
         recurring_config: { type: 'dnr', days: [] },
         shopify_product_id: '',
         variant_config: '',
-
+        starting_date: moment().format('YYYY-MM-DD'),
+        stock_time: moment().format('YYYY-MM-DD HH:mm:ss'),
     })
 
     const [errors, setErrors] = useState({})
@@ -55,8 +56,13 @@ export default function NewSettings() {
                 is_active: false,
                 recurring_config: { type: 'dnr', days: [] },
                 shopify_product_id: '',
-                variant_config: ''
+                variant_config: '',
+                starting_date: moment().format('YYYY-MM-DD'),
+                stock_time: moment().seconds(0).format('YYYY-MM-DD HH:mm:ss'),
             })
+            setSelectedProduct(null);
+            setProductVariants([])
+            setProductInputValue('')
             setActive(false)
 
         }} />
@@ -130,7 +136,7 @@ export default function NewSettings() {
             const selectedValue = selected.map((selectedItem) => {
                 const matchedOption = productOptions.find((option) => {
                     setValues((prevValues) => ({
-                        // ...prevValues,
+                        ...prevValues,
                         'shopify_product_id': selectedItem
                     }));
 
@@ -415,7 +421,7 @@ export default function NewSettings() {
                                 autoComplete="off"
                                 isDate={false}
                                 isTime={true}
-                                format='HH:mm:ss'
+                                format='hh:mm A'
                                 initialViewMode="time"
                                 onChange={(value) => {
                                     onValuesChange(value, 'stock_time')

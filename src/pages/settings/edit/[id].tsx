@@ -35,7 +35,6 @@ export default function EditSettings() {
         setValues((prevValues) => {
             const newData = { ...prevValues.minimum_cart_contents_config };
             const valuesCartBkp = { ...prevValues };
-            console.log('newdata', newData);
 
             if (!newData[type]) {
                 newData[type] = {};

@@ -65,11 +65,11 @@ export default function InventorySchedule() {
                 </div>
 
                 let thumbnail = <Thumbnail
-                source={dt.product_image}
-                size="small"
-                alt={dt.title}
-              />
-                console.log('dt', dt)
+                    source={dt.product_image}
+                    size="small"
+                    alt={dt.title}
+                />
+
                 return {
                     id: dt.id,
                     image: thumbnail,
