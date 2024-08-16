@@ -35,7 +35,7 @@ export default function EditSettings() {
                     end_date: dt.end_date ? dt.end_date : '-',
                     status: dt.status == 1 ? true : false,
                     apply_to_all_locations: (dt.apply_to_all_locations == 1 && dt.apply_to_all_locations != '') ? true : false,
-                    locations: dt.locations_id,
+                    locations_id: dt.locations_id,
                 })
                 setIsLoading(false)
             })
@@ -199,9 +199,9 @@ export default function EditSettings() {
                                     field="locations_id"
                                     title="Select Location"
                                     onFieldsChange={onValuesChange}
-                                    validationErrors={errors.locations}
+                                    validationErrors={errors.locations_id}
                                     isEditing={true}
-                                    editingValues={values.locations}
+                                    editingValues={values.locations_id}
                                     listTitle={"Suggested Locations"}
                                 />
                             </div>

@@ -38,7 +38,7 @@ export default function EditLocations() {
     };
 
     // Order of days from Monday to Sunday
-    const daysOrder = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
+    // const daysOrder = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
 
     /************************************************** */
 
@@ -241,10 +241,10 @@ export default function EditLocations() {
 
     const handleTabChange = (selectedTabIndex: number) => setSelected(selectedTabIndex);
 
-    const daysOrderTest = { 'sunday': 0, 'monday': 1, 'tuesday': 2, 'wednesday': 3, 'thursday': 4, 'friday': 5, 'saturday': 6 };
+    const daysOrder = { 'sunday': 0, 'monday': 1, 'tuesday': 2, 'wednesday': 3, 'thursday': 4, 'friday': 5, 'saturday': 6 };
 
     const getDayByNumber = (number) => {
-        return Object.keys(daysOrderTest).find(day => daysOrderTest[day] === number);
+        return Object.keys(daysOrder).find(day => daysOrder[day] === number);
     };
 
     const tabs = [
@@ -639,17 +639,17 @@ export default function EditLocations() {
                         </div>
                     </div>
                     <label htmlFor="no_overwrite_stock">Timeslot Configuration </label>
-                    <Tabs tabs={tabs} selected={daysOrderTest[getDayByNumber(selected)]} onSelect={handleTabChange}>
+                    <Tabs tabs={tabs} selected={daysOrder[getDayByNumber(selected)]} onSelect={handleTabChange}>
                         <div style={{ width: '100%', textAlign: 'center', fontWeight: 'bold', fontSize: '20px' }}>
                             <h3 style={{ fontWeight: 'bold', fontSize: '20px', textTransform: 'capitalize' }}>{getDayByNumber(selected)}</h3>
                         </div>
-                        <div key={daysOrderTest[getDayByNumber(selected)]} style={{ marginBottom: "10px", display: 'flex', justifyContent: 'end' }}>
+                        <div key={daysOrder[getDayByNumber(selected)]} style={{ marginBottom: "10px", display: 'flex', justifyContent: 'end' }}>
                             <div style={{ width: '100%', display: 'flex' }}>
                                 <div style={{ width: '50%', padding: '15px', margin: '10px', border: '1px solid #E3E3E3' }}>
                                     <center>Delivery</center>
                                     <center>
                                         <div style={{ width: '100%' }}>
-                                            <Button className={styles.fullWidthButton} onClick={() => addDeliverySlot('monday')} ariaExpanded={deliveryGroupOpen} ariaControls="delivery-config-new-group">
+                                            <Button className={styles.fullWidthButton} onClick={() => addDeliverySlot(getDayByNumber(selected))} ariaExpanded={deliveryGroupOpen} ariaControls="delivery-config-new-group">
                                                 Add New Time Slot
                                             </Button>
                                         </div>
@@ -664,7 +664,7 @@ export default function EditLocations() {
                                                         max={slot.slot_end}
                                                         value={slot.slot_start}
                                                         autoComplete="off"
-                                                        onChange={(value) => handleChange('monday', 'delivery', index, 'slot_start', value)}
+                                                        onChange={(value) => handleChange(getDayByNumber(selected), 'delivery', index, 'slot_start', value)}
                                                         style={{ width: "30%" }}
                                                     />
                                                     {/* <TextField
@@ -683,7 +683,7 @@ export default function EditLocations() {
                                                         min={slot.slot_start}
                                                         value={slot.slot_end}
                                                         autoComplete="off"
-                                                        onChange={(value) => handleChange('monday', 'delivery', index, 'slot_end', value)}
+                                                        onChange={(value) => handleChange(getDayByNumber(selected), 'delivery', index, 'slot_end', value)}
                                                         style={{ width: "30%" }}
                                                     />
 
@@ -704,7 +704,7 @@ export default function EditLocations() {
                                                         type='number'
                                                         value={slot.order_limit !== null ? slot.order_limit : ''}
                                                         autoComplete="off"
-                                                        onChange={(value) => handleChange('monday', 'delivery', index, 'order_limit', value)}
+                                                        onChange={(value) => handleChange(getDayByNumber(selected), 'delivery', index, 'order_limit', value)}
                                                     />
                                                 </div>
                                             </div>
@@ -714,7 +714,7 @@ export default function EditLocations() {
                                 <div style={{ width: '50%', padding: '15px', margin: '10px', border: '1px solid #E3E3E3' }}>
                                     <center>Pick Up</center>
                                     <center>
-                                        <Button onClick={() => addPickupSlot('monday')} ariaExpanded={pickUpGroupOpen} ariaControls="pickUp-config-new-group">
+                                        <Button onClick={() => addPickupSlot(getDayByNumber(selected))} ariaExpanded={pickUpGroupOpen} ariaControls="pickUp-config-new-group">
                                             Add New Time Slot
                                         </Button>
                                     </center>
@@ -728,7 +728,7 @@ export default function EditLocations() {
                                                         max={slot.slot_end}
                                                         value={slot.slot_start}
                                                         autoComplete="off"
-                                                        onChange={(value) => handleChange('monday', 'pickup', index, 'slot_start', value)}
+                                                        onChange={(value) => handleChange(getDayByNumber(selected), 'pickup', index, 'slot_start', value)}
                                                         style={{ width: "20%" }}
                                                     />
                                                     {/* <TextField
@@ -746,7 +746,7 @@ export default function EditLocations() {
                                                         min={slot.slot_start}
                                                         value={slot.slot_end}
                                                         autoComplete="off"
-                                                        onChange={(value) => handleChange('monday', 'pickup', index, 'slot_end', value)}
+                                                        onChange={(value) => handleChange(getDayByNumber(selected), 'pickup', index, 'slot_end', value)}
                                                         style={{ width: "20%" }}
                                                     />
                                                     {/* <TextField
@@ -766,7 +766,7 @@ export default function EditLocations() {
                                                         type='number'
                                                         value={slot.order_limit !== null ? slot.order_limit : ''}
                                                         autoComplete="off"
-                                                        onChange={(value) => handleChange('monday', 'pickup', index, 'order_limit', value)}
+                                                        onChange={(value) => handleChange(getDayByNumber(selected), 'pickup', index, 'order_limit', value)}
                                                     />
                                                 </div>
                                             </div>

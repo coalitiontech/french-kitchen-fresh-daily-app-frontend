@@ -3,7 +3,7 @@ import { useCallback, useEffect, useState } from 'react';
 import axiosInstance from '@/plugins/axios';
 import DateTimeSelect from '@/Components/DateTimeSelect';
 import moment from 'moment';
-
+import ShopifyLocationsSelect from "@/Components/ShopifyLocationsSelect";
 import {
     ArrowLeftIcon
 } from '@shopify/polaris-icons';
@@ -17,12 +17,13 @@ export default function NewSettings() {
     const [values, setValues] = useState({
         quantity: '',
         blackout_dates: '',
-        stock_datetime: moment().format(),
         overwrite_stock: false,
         is_active: false,
         recurring_config: { type: 'dnr', days: [] },
         shopify_product_id: '',
         variant_config: '',
+        apply_to_all_locations: false,
+        locations_id: '',
         starting_date: moment().format('YYYY-MM-DD'),
         stock_time: moment().format('YYYY-MM-DD HH:mm:ss'),
     })
@@ -33,13 +34,8 @@ export default function NewSettings() {
 
         setValues((prevValue) => {
             let valueBkp = { ...prevValue }
-            if (name == 'stock_datetime') {
-                const formattedDate = moment(value).format('YYYY-MM-DD HH:mm:ss');
-                valueBkp[name] = formattedDate;
-            }
-            else {
-                valueBkp[name] = value
-            }
+
+            valueBkp[name] = value
 
             return valueBkp
         })
@@ -51,12 +47,13 @@ export default function NewSettings() {
             setValues({
                 quantity: '',
                 blackout_dates: '',
-                stock_datetime: moment().format(),
                 overwrite_stock: false,
                 is_active: false,
                 recurring_config: { type: 'dnr', days: [] },
                 shopify_product_id: '',
                 variant_config: '',
+                apply_to_all_locations: false,
+                locations_id: '',
                 starting_date: moment().format('YYYY-MM-DD'),
                 stock_time: moment().seconds(0).format('YYYY-MM-DD HH:mm:ss'),
             })
@@ -372,8 +369,7 @@ export default function NewSettings() {
                         </div>
                     )}
                     <div style={{ width: '100%', display: 'flex' }}>
-
-                        <div style={{ width: '50%', padding: '15px' }}>
+                        <div style={{ width: '30%', padding: '15px' }}>
                             <Select
                                 label="Recurring Config"
                                 options={recurringOptions}
@@ -412,7 +408,6 @@ export default function NewSettings() {
                                 style={{ width: "30%", overflow: "visible" }}
                             />
                         </div>
-
                         <div style={{ width: '25%', padding: '15px' }}>
                             <DateTimeSelect
                                 label="Stock Time"
@@ -429,6 +424,23 @@ export default function NewSettings() {
                                 style={{ width: "30%", overflow: "visible" }}
                             />
                         </div>
+                        <div style={{ width: '15%', padding: '15px' }}>
+                            <h3 > Apply To All Locations</h3>
+                            <StatusSwitch status={values.apply_to_all_locations} arrayKey={'apply_to_all_locations'} changeStatus={onValuesChange} />
+                        </div>
+                        {values.apply_to_all_locations === false && (
+                            <div style={{ width: '25%', padding: '15px' }}>
+                                <ShopifyLocationsSelect
+                                    field="locations_id"
+                                    title="Select Location"
+                                    onFieldsChange={onValuesChange}
+                                    validationErrors={errors.locations}
+                                    isEditing={true}
+                                    editingValues={values.locations}
+                                    listTitle={"Suggested Locations"}
+                                />
+                            </div>
+                        )}
                     </div>
                     <Divider borderColor="border" />
 

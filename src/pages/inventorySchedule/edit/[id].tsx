@@ -2,6 +2,7 @@ import { Box, Card, Text, TextField, Button, Toast, Divider, Icon, Select, Modal
 import { useCallback, useEffect, useState } from 'react';
 import axiosInstance from '@/plugins/axios';
 import DateTimeSelect from '@/Components/DateTimeSelect';
+import ShopifyLocationsSelect from "@/Components/ShopifyLocationsSelect";
 import {
     ArrowLeftIcon
 } from '@shopify/polaris-icons';
@@ -36,7 +37,7 @@ export default function EditSettings() {
                 setSelectedProduct(dt.shopify_product_id);
                 setValues({
                     quantity: dt.quantity,
-                    stock_datetime: dt.stock_datetime,
+                    next_run_date: dt.next_run_date,
                     starting_date: moment(dt.starting_date).format('YYYY-MM-DD HH:mm:ss'),
                     stock_time: moment(`${dt.starting_date} ${dt.stock_time}`).format('YYYY-MM-DD HH:mm:ss'),
                     overwrite_stock: dt.overwrite_stock ? true : false,
@@ -44,6 +45,8 @@ export default function EditSettings() {
                     recurring_config: dt.recurring_config ? dt.recurring_config : { type: '', days: [] },
                     shopify_product_id: dt.shopify_product_id,
                     variant_config: dt.variant_config,
+                    apply_to_all_locations: (dt.apply_to_all_locations == 1 && dt.apply_to_all_locations != '') ? true : false,
+                    locations_id: dt.locations_id,
                 })
 
                 setProductSelectedOptions([dt.shopify_product_id]);
@@ -390,19 +393,7 @@ export default function EditSettings() {
                     )}
 
                     <div style={{ width: '100%', display: 'flex' }}>
-                        {/* <div style={{ width: '25%', padding: '15px' }}>
-                            <DateTimeSelect
-                                label="Stock Datetime"
-                                name="stock_datetime"
-                                value={values.stock_datetime}
-                                autoComplete="off"
-                                onChange={(value) => {
-                                    onValuesChange(value, 'stock_datetime')
-                                }}
-                                style={{ width: "30%", overflow: "visible" }}
-                            />
-                        </div> */}
-                        <div style={{ width: '50%', padding: '15px' }}>
+                        <div style={{ width: '30%', padding: '15px' }}>
                             <Select
                                 label="Recurring Config"
                                 options={recurringOptions}
@@ -459,6 +450,23 @@ export default function EditSettings() {
                             />
                         </div>
 
+                        <div style={{ width: '15%', padding: '15px' }}>
+                            <h3 > Apply To All Locations</h3>
+                            <StatusSwitch status={values.apply_to_all_locations} arrayKey={'apply_to_all_locations'} changeStatus={onValuesChange} />
+                        </div>
+                        {values.apply_to_all_locations === false && (
+                            <div style={{ width: '25%', padding: '15px' }}>
+                                <ShopifyLocationsSelect
+                                    field="locations_id"
+                                    title="Select Location"
+                                    onFieldsChange={onValuesChange}
+                                    validationErrors={errors.locations_id}
+                                    isEditing={true}
+                                    editingValues={values.locations_id}
+                                    listTitle={"Suggested Locations"}
+                                />
+                            </div>
+                        )}
                     </div>
                     <Divider borderColor="border" />
 

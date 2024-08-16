@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from 'react';
 import axiosInstance from '@/plugins/axios';
 import ButtonEnd from '@/Components/ButtonEnd';
 import {
+    DuplicateIcon,
     EditIcon,
     SkeletonIcon,
     ViewMajor
@@ -11,8 +12,6 @@ import {
 import { parseUrl } from 'next/dist/shared/lib/router/utils/parse-url';
 
 export default function InventorySchedule() {
-
-    const [blackoutDateTime, setBlackoutDateTime] = useState(null);
     const [inventorySchedule, setInventorySchedule] = useState(null);
 
     const [loading, setLoading] = useState(true)
@@ -23,9 +22,9 @@ export default function InventorySchedule() {
         { title: 'ID' },
         { title: 'Image' },
         { title: 'Product Title' },
-        { title: 'Stock DateTime' },
         { title: 'Overwrite Stock' },
         { title: 'Is Active' },
+        { title: 'Next Run Date' },
         { title: 'Actions', alignment: 'end' }
     ]
 
@@ -38,27 +37,27 @@ export default function InventorySchedule() {
         window.location.href = `/inventorySchedule/new`
     }, [])
 
-    const onFilterChangesHandler = (filter) => {
-        setFilters((prevValue) => {
-            if (prevValue['name']) {
-                return { ...{ 'name': prevValue['name'] }, ...filter }
-            }
-            return { ...filter };
-        })
-    }
-
     const onTitleFilterChangesHandler = (filter) => {
         setFilters((prevValue) => {
             return { ...prevValue, ...filter };
         })
     }
 
-    useEffect(() => {
+    const duplicateItem = (id) => {
+        axiosInstance.put(`/api/inventorySchedule/duplicate/${id}`).then((response) => {
+            getTableData()
+        })
+    }
+
+    const getTableData = () => {
         let currentFilter = '?' + new URLSearchParams(filters).toString();
 
         axiosInstance.get('/api/inventorySchedule' + currentFilter).then((response) => {
             let data = response.data.data.map((dt) => {
                 let action = <div className='action-cell'>
+                    <a style={{cursor: 'pointer'}} onClick={() => duplicateItem(dt.id)} >
+                        <Icon source={DuplicateIcon} tone="base" />
+                    </a>
                     <a href={`/inventorySchedule/edit/${dt.id}`} >
                         <Icon source={EditIcon} tone="base" />
                     </a>
@@ -74,11 +73,9 @@ export default function InventorySchedule() {
                     id: dt.id,
                     image: thumbnail,
                     title: dt.title,
-                    // quantity: dt.quantity ? dt.quantity : '-',
-                    // blackout_dates: dt.blackout_dates ? dt.blackout_dates : '-',
-                    stock_datetime: dt.stock_datetime ? dt.stock_datetime : '-',
                     overwrite_stock: (dt.overwrite_stock == 1 && dt.overwrite_stock != '') ? <div className='toggle-vip'><Icon source={SkeletonIcon} tone="success" /></div> : <div className='toggle-vip'><Icon source={SkeletonIcon} tone="critical" /></div>,
                     is_active: dt.is_active == 1 ? <div className='toggle-vip'><Icon source={SkeletonIcon} tone="success" /></div> : <div className='toggle-vip'><Icon source={SkeletonIcon} tone="critical" /></div>,
+                    next_run_date: (dt.next_run_date && dt.is_active == 1) ? dt.next_run_date : '-',
                     action: action
                 }
             })
@@ -103,6 +100,10 @@ export default function InventorySchedule() {
             setPagination(paginationData)
             setLoading(false)
         })
+    }
+
+    useEffect(() => {
+        getTableData()
     }, [filters])
 
     const changePageHandle = (url) => {

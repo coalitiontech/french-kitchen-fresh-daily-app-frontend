@@ -35,8 +35,9 @@ export default function Table({ tableData, headings, resourceName, paginationDat
                         </IndexTable.Cell>
                     } else if (key === 'amount') {
                         return <IndexTable.Cell key={`${data.id}-${key}`} className='amount-cell' >{data[key]}</IndexTable.Cell>
-                    }
-                    else {
+                    } else if (key === 'action') {
+                        return <IndexTable.Cell key={`${data.id}-${key}`} className='action-cell2' >{data[key]}</IndexTable.Cell>
+                    } else {
                         return <IndexTable.Cell key={`${data.id}-${key}`} >{data[key]}</IndexTable.Cell>
                     }
                 })}

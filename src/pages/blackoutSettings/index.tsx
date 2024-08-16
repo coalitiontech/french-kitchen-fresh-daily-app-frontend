@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from 'react';
 import axiosInstance from '@/plugins/axios';
 import ButtonEnd from '@/Components/ButtonEnd';
 import {
+    DuplicateIcon,
     EditIcon,
     SkeletonIcon,
     ViewMajor
@@ -52,12 +53,21 @@ export default function BlackoutDateTime() {
         })
     }
 
-    useEffect(() => {
+    const duplicateItem = (id) => {
+        axiosInstance.put(`/api/blackoutDateTime/duplicate/${id}`).then((response) => {
+            getTableData()
+        })
+    }
+
+    const getTableData = () => {
         let currentFilter = '?' + new URLSearchParams(filters).toString();
 
         axiosInstance.get('/api/blackoutDateTime' + currentFilter).then((response) => {
             let data = response.data.data.map((dt) => {
                 let action = <div className='action-cell'>
+                    <a style={{ cursor: 'pointer' }} onClick={() => duplicateItem(dt.id)} >
+                        <Icon source={DuplicateIcon} tone="base" />
+                    </a>
                     <a href={`/blackoutSettings/edit/${dt.id}`} >
                         <Icon source={EditIcon} tone="base" />
                     </a>
@@ -94,6 +104,10 @@ export default function BlackoutDateTime() {
             setPagination(paginationData)
             setLoading(false)
         })
+    }
+
+    useEffect(() => {
+        getTableData()
     }, [filters])
 
     const changePageHandle = (url) => {
