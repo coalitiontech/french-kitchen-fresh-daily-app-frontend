@@ -451,7 +451,7 @@ export default function EditSettings() {
                         </div>
 
                         <div style={{ width: '15%', padding: '15px' }}>
-                            <h3 > Apply To All Locations</h3>
+                            <h3> Apply To All Locations</h3>
                             <StatusSwitch status={values.apply_to_all_locations} arrayKey={'apply_to_all_locations'} changeStatus={onValuesChange} />
                         </div>
                         {values.apply_to_all_locations === false && (
