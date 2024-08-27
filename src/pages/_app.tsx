@@ -1,20 +1,14 @@
-// import '@/styles/globals.css'
-import { NextUIProvider } from '@nextui-org/react'
 import type { AppProps } from 'next/app'
 import '@shopify/polaris/build/esm/styles.css';
 import en from "@shopify/polaris/locales/en.json";
 import '@/styles/table.css';
-import styles from '@/Components/styles.button.css';
-
-import { HomeMinor, OrdersMinor, ProductsMinor } from '@shopify/polaris-icons';
 import {
   AppProvider,
   Frame,
-  Navigation
 } from '@shopify/polaris';
 import NavigationComponent from '@/Components/NavigationComponent';
-import { useEffect, useState, useMemo } from 'react';
 import { useRouter } from 'next/router';
+import {NavMenu} from '@shopify/app-bridge-react';
 
 export default function App({ Component, pageProps }: AppProps) {
   const router = useRouter();
@@ -23,18 +17,21 @@ export default function App({ Component, pageProps }: AppProps) {
   const content = <Component {...pageProps} />
   return (
     <AppProvider i18n={en}>
-      {/* {
-        router.isReady && 
-        <>
-          {
-            router.pathname === "/load" &&
-            <Frame children={content}/>
-            ||
-            <Frame navigation={navigation} children={content}/>
-          }
-        </> 
-      } */}
-      <Frame navigation={navigation} children={content}/>
+      {
+        process.env.NEXT_PUBLIC_SHOPIFY_LOAD_APP_BRIDGE &&
+        <NavMenu>
+          <a href="/inventorySchedule" rel="home">Inventory Schedule</a>
+          <a href="/blackoutSettings">BlackoutSetting</a>
+          <a href="/locations">Locations</a>
+          <a href="/settings/1">Settings</a>
+        </NavMenu>
+      }
+      {
+        process.env.NEXT_PUBLIC_SHOPIFY_LOAD_APP_BRIDGE &&
+        <Frame children={content}/>
+        ||
+        <Frame navigation={navigation} children={content}/>
+      }
     </AppProvider>
   )
 }
