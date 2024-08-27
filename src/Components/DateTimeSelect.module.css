@@ -1,7 +1,9 @@
 .datetimeContainer {
   position: relative;
-  display: inline-block;
+  display: flex;
   width: 100%;
+  flex-direction: column;
+  gap: 5px;
 }
 
 .polarisTextfield {

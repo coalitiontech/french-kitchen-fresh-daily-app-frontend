@@ -66,6 +66,7 @@ export default function ShopifyProductsSelect({ onFieldsChange, title, field, cl
             optionsLabelValue={optionsLabel}
             optionsValue={options}
             updateOptions={updateOptions}
+            listTitle="Suggested Products"
         />
     </div>
 }

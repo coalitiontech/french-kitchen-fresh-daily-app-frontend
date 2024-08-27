@@ -9,7 +9,8 @@ export default function MultipleSelect({
     selectedOptionsValue, selectedOptionsValueChange,
     validationErrors,
     updateOptions,
-    label
+    label,
+    listTitle = ''
 }) {
     const [inputValue, setInputValue] = useState('');
 
@@ -59,7 +60,7 @@ export default function MultipleSelect({
             value={inputValue}
             verticalContent={verticalContentMarkup}
             autoComplete="off"
-            placeholder="Select products"
+            placeholder={label}
         />
     );
 
@@ -71,7 +72,7 @@ export default function MultipleSelect({
                 selected={selectedOptionsValue}
                 textField={textField}
                 onSelect={selectedOptionsValueChange}
-                listTitle="Suggested Tags"
+                listTitle={listTitle}
             />
         </div>
     );

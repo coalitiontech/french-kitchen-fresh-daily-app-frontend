@@ -5,8 +5,20 @@ import SelectSearch from "react-select-search";
 import MultipleSelect from "./MultipleSelect";
 import axiosInstance from '@/plugins/axios';
 
-export default function ShopifyLocationsSelect({ onFieldsChange, title, field, clearValue, validationErrors, editingValues = [], isEditing = false, response = {}, groupIndex, updateDefaultOptions }) {
-     
+export default function ShopifyLocationsSelect({
+    onFieldsChange,
+    title,
+    field,
+    clearValue,
+    validationErrors,
+    editingValues = [],
+    isEditing = false,
+    response = {},
+    groupIndex,
+    updateDefaultOptions,
+    listTitle = ''
+}) {
+
     useEffect(() => {
 
         axiosInstance.get(`/api/select/locations`).then((response) => {
@@ -19,7 +31,7 @@ export default function ShopifyLocationsSelect({ onFieldsChange, title, field, c
         }).catch((error) => {
             console.log(error)
         })
- 
+
     }, [])
 
     const [selectedOptions, setSelectedOptions] = useState<string[]>([]);
@@ -34,7 +46,7 @@ export default function ShopifyLocationsSelect({ onFieldsChange, title, field, c
 
     }, [clearValue])
 
-    
+
 
     const selectedOptionsValueChangeHandler = (value) => {
         setSelectedOptions(value)
@@ -46,7 +58,7 @@ export default function ShopifyLocationsSelect({ onFieldsChange, title, field, c
     }
 
     const updateOptions = (value) => {
-         
+
         axiosInstance.get(`/api/select/locations?title=${value}`).then((response) => {
             optionsValueChangeHandler(response.data.selectData);
         }).catch((error) => {
@@ -55,7 +67,7 @@ export default function ShopifyLocationsSelect({ onFieldsChange, title, field, c
     }
 
     return <div>
-        
+
         <MultipleSelect
             label={title}
             validationErrors={validationErrors}
@@ -66,6 +78,7 @@ export default function ShopifyLocationsSelect({ onFieldsChange, title, field, c
             optionsLabelValue={optionsLabel}
             optionsValue={options}
             updateOptions={updateOptions}
+            listTitle={listTitle}
         />
     </div>
 }

@@ -3,7 +3,7 @@ import { Box, Card, Text, TextField, Button, Toast, Divider, Icon, Select, Modal
 import { useCallback, useEffect, useState } from 'react';
 import axiosInstance from '@/plugins/axios';
 import { DatePicker } from '@shopify/polaris';
-import TimeSelect from '@/Components/TimeSelect'; 
+import TimeSelect from '@/Components/TimeSelect';
 import {
     ArrowLeftIcon
 } from '@shopify/polaris-icons';
@@ -17,13 +17,15 @@ export default function EditSettings() {
     const [errors, setErrors] = useState({})
     const [active, setActive] = useState(false);
 
+    const [isEditing, setIsEditing] = useState(false)
+
     const [selectedDate, setSelectedDate] = useState(new Date())
 
     const [isLoading, setIsLoading] = useState(true)
 
     const router = useRouter();
     const processId = router.query.id
-     
+
 
     const initialCartConfigData = {
         delivery: { min_items: 0, min_order_total: 0.00 },
@@ -31,7 +33,7 @@ export default function EditSettings() {
     };
 
     const handleCartChange = (type, field, value) => {
-       
+
         setValues((prevValues) => {
             const newData = { ...prevValues.minimum_cart_contents_config };
             const valuesCartBkp = { ...prevValues };
@@ -47,7 +49,7 @@ export default function EditSettings() {
 
     };
 
-     
+
     /****************************************************************************/
     useEffect(() => {
         if (processId) {
@@ -61,7 +63,7 @@ export default function EditSettings() {
                 })
                 setIsLoading(false)
             })
-             
+
         }
     }, [processId])
 
@@ -87,6 +89,7 @@ export default function EditSettings() {
         axiosInstance.put(`/api/settings/${processId}`, values).then((response) => {
             setErrors({})
             setActive(true)
+            setIsEditing(prevValue => !prevValue)
         }).catch((response) => {
             const error = response.response.data.errors
             const err = {}
@@ -109,7 +112,7 @@ export default function EditSettings() {
         })
     }, [values])
 
-    const onClickActionHandler = () => { 
+    const onClickActionHandler = () => {
 
         // values.minimum_cart_contents_config = JSON.stringify(values.minimum_cart_contents_config);
 
@@ -117,7 +120,7 @@ export default function EditSettings() {
             window.location.href = `/settings`
         }).catch((response) => {
             const error = response.response.data.errors
-             
+
             const err = {}
             Object.keys(error).map((key) => {
                 err[key] = <ul key={key} style={{ margin: 0, listStyle: 'none', padding: 0 }}>
@@ -153,14 +156,14 @@ export default function EditSettings() {
                     <div style={{ marginBottom: "10px" }}>
                         <Text variant="heading2xl" alignment="center" as={'h1'} >Edit Setting</Text>
                     </div>
-                     
-                    
+
+
                     <label htmlFor="cart_content">Cart Content Config </label>
 
                     <div style={{ marginBottom: "10px", display: 'flex', justifyContent: 'end' }} >
 
                         <div style={{ width: '100%', display: 'flex' }}>
-                            
+
                             <div style={{ width: '50%', padding: '15px', margin: '10px', border: '1px solid #E3E3E3' }}>
                                 <center>Delivery</center>
                                 <div style={{ width: '100%', display: 'flex' }}>
@@ -174,7 +177,7 @@ export default function EditSettings() {
                                             autoComplete="off"
                                             inputMode='number'
                                             onChange={(value) => handleCartChange('delivery', 'min_items', value)}
-                                              
+                                            readOnly={!isEditing}
                                         />
                                     </div>
                                     <div style={{ width: '50%', padding: '15px' }}>
@@ -186,7 +189,8 @@ export default function EditSettings() {
                                             autoComplete="off"
                                             inputMode='number'
                                             onChange={(value) => handleCartChange('delivery', 'min_order_total', value)}
-                                        /> 
+                                            readOnly={!isEditing}
+                                        />
                                     </div>
                                 </div>
                             </div>
@@ -202,9 +206,10 @@ export default function EditSettings() {
                                             autoComplete="off"
                                             inputMode='number'
                                             onChange={(value) => handleCartChange('pickup', 'min_items', value)}
+                                            readOnly={!isEditing}
                                         />
-                                    </div> 
-                                   
+                                    </div>
+
                                     <div style={{ width: '50%', padding: '15px' }}>
                                         <TextField
                                             label="Minimum Order Total ($)"
@@ -214,18 +219,24 @@ export default function EditSettings() {
                                             autoComplete="off"
                                             inputMode='number'
                                             onChange={(value) => handleCartChange('pickup', 'min_order_total', value)}
-                                        /> 
+                                            readOnly={!isEditing}
+                                        />
                                     </div>
                                 </div>
                             </div>
 
                         </div>
                     </div>
-                     <Divider borderColor="border" />
+                    <Divider borderColor="border" />
 
                     <div style={{ marginBottom: "10px", marginTop: "10px", display: 'flex', justifyContent: 'end' }} >
-                        <div style={{ marginRight: '10px' }}><Button loading={active} onClick={onSaveAndKeepEditingHandler}>Save & Keep Editing</Button></div>
-                        <Button loading={active} onClick={onClickActionHandler}>Save</Button>
+                        {
+                            isEditing &&
+                            <div style={{ marginRight: '10px' }}><Button loading={active} onClick={onSaveAndKeepEditingHandler}>Save</Button></div>
+                            ||
+                            <Button loading={active} onClick={() => setIsEditing(prevValue => !prevValue)}>Edit</Button>
+                        }
+                        {/* <Button loading={active} onClick={onClickActionHandler}>Save</Button> */}
                     </div>
                     {/* <ButtonEnd onClickAction={onClickActionHandler} buttonName="Create Ingredient" /> */}
                 </div>

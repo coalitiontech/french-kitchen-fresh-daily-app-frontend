@@ -67,6 +67,7 @@ export default function ShopifyVariantSelect({ onFieldsChange, title, field, cle
             optionsLabelValue={optionsLabel}
             optionsValue={options}
             updateOptions={updateOptions}
+            listTitle="Suggested Variant"
         />
     </div>
 }

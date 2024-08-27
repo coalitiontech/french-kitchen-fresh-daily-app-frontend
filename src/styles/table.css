@@ -3,8 +3,14 @@
 }
 
 .action-cell {
-  display: flex;
-  width: 20px;
+  display: inline-flex;
+  gap: 5px;
+  margin-left: auto;
+  justify-content: flex-end;
+}
+
+.action-cell2 {
+  text-align: end;
   margin-left: auto;
 }
 
@@ -16,6 +22,26 @@
   overflow: unset;
 }
 
-.collapsible-ingredient-group > .Polaris-Link:focus {
+.collapsible-ingredient-group>.Polaris-Link:focus {
   outline: none;
+}
+
+.week-days-section {
+  width: 100%;
+  padding: 15px;
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+
+  & label {
+    flex-direction: column;
+  }
+}
+
+.toggle-vip > .Polaris-Icon {
+  margin: 0;
+}
+
+.toggle-vip > .Polaris-Icon rect {
+  fill-opacity: 0.5;
 }

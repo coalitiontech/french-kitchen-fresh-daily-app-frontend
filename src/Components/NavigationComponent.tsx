@@ -1,5 +1,5 @@
 import {Frame, Navigation} from '@shopify/polaris';
-import { ProfileIcon, FoodIcon, BookOpenIcon} from '@shopify/polaris-icons';
+import { ProfileIcon, BookOpenIcon, CalendarTimeIcon, CalendarIcon} from '@shopify/polaris-icons';
 import React from 'react';
 
 export default function NavigationComponent({url}) {
@@ -15,7 +15,7 @@ export default function NavigationComponent({url}) {
               selected: (url.includes('/locations'))
             },
             {
-              url: '/settings',
+              url: '/settings/1',
               label: 'Settings',
               icon: ProfileIcon,
               selected: (url.includes('/settings'))
@@ -23,13 +23,13 @@ export default function NavigationComponent({url}) {
             {
               url: '/inventorySchedule',
               label: 'Inventory Schedule',
-              icon: FoodIcon,
+              icon: CalendarTimeIcon,
               selected: (url.includes('/inventorySchedule'))
             },
             {
               url: '/blackoutSettings',
               label: 'BlackoutSetting',
-              icon: FoodIcon,
+              icon: CalendarIcon,
               selected: (url.includes('/blackoutSettings'))
             },
           ]}

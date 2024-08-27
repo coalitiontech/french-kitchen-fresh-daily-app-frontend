@@ -51,8 +51,6 @@ export default function NewSettings() {
 
             return valuesCartBkp;
         });
-        console.log(values);
-
     };
 
     const onValuesChange = (value, name) => {
@@ -67,7 +65,7 @@ export default function NewSettings() {
     const toastMarkup = active ? (
         <Toast content="Setting Created Successfully!" onDismiss={() => {
             setValues({
-                minimum_cart_contents_config: ''
+                minimum_cart_contents_config: initialCartConfigData
             })
             setActive(false)
 
@@ -101,9 +99,6 @@ export default function NewSettings() {
     }, [values])
 
     const onClickActionHandler = useCallback(() => {
-
-        values.minimum_cart_contents_config = JSON.stringify(values.minimum_cart_contents_config);
-
         axiosInstance.post('/api/settings', values).then((response) => {
             window.location.href = `/settings`
         }).catch((response) => {
@@ -130,14 +125,14 @@ export default function NewSettings() {
             <Card padding={800} >
                 {/* <div style={{ width: '4000px', maxWidth: '100%' }}> */}
                 <div style={{ width: '100%' }}>
-                    <a className='back-button' href='/locations' style={{ position: 'absolute', display: 'flex', textDecoration: 'none' }}>
+                    <a className='back-button' href='/settings' style={{ position: 'absolute', display: 'flex', textDecoration: 'none' }}>
                         <Icon
                             source={ArrowLeftIcon}
                             tone="base"
                         /><span> Back</span>
                     </a>
                     <div style={{ marginBottom: "10px" }}>
-                        <Text variant="heading3xl" alignment="center" as={'h1'} >New Setting</Text>
+                        <Text variant="heading2xl" alignment="center" as={'h1'} >New Setting</Text>
                     </div>
                       
                     <label htmlFor="no_overwrite_stock">Cart Content Config </label>
