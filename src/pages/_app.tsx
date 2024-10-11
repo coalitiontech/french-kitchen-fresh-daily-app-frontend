@@ -20,7 +20,8 @@ export default function App({ Component, pageProps }: AppProps) {
       {
         process.env.NEXT_PUBLIC_SHOPIFY_LOAD_APP_BRIDGE &&
         <NavMenu>
-          <a href="/inventorySchedule" rel="home">Inventory Schedule</a>
+          <a href="/" rel="home">Home</a>
+          <a href="/inventorySchedule">Inventory Schedule</a>
           <a href="/blackoutSettings">BlackoutSetting</a>
           <a href="/locations">Locations</a>
           <a href="/settings/1">Settings</a>
