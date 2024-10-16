@@ -5,7 +5,7 @@ import { useRouter } from "next/router";
 export default function Load() {
   const { load } = useAuth({
     middleware: "guest",
-    redirectIfAuthenticated: "/locations",
+    redirectIfAuthenticated: "/inventorySchedule",
   });
   const router = useRouter();
   useEffect(() => {
