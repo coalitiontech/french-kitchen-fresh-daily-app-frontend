@@ -22,7 +22,7 @@ export default function App({ Component, pageProps }: AppProps) {
         <NavMenu>
           <a href="/" rel="home">Home</a>
           <a href="/inventorySchedule">Inventory Schedule</a>
-          <a href="/blackoutSettings">BlackoutSetting</a>
+          <a href="/blackoutSettings">Blackout Settings</a>
           <a href="/locations">Locations</a>
           <a href="/settings/1">Settings</a>
         </NavMenu>
