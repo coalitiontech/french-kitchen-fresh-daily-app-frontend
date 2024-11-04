@@ -1,10 +1,11 @@
 import Table from '@/Components/Table';
-import { Box, Card, Icon, Text, Button, Thumbnail } from '@shopify/polaris';
+import { Box, Card, Icon, Text, Button, Thumbnail, Toast } from '@shopify/polaris';
 import { useCallback, useEffect, useState } from 'react';
 import axiosInstance from '@/plugins/axios';
 import ButtonEnd from '@/Components/ButtonEnd';
 import {
     DuplicateIcon,
+    DeleteIcon,
     EditIcon,
     SkeletonIcon,
     ViewMajor
@@ -13,7 +14,7 @@ import { parseUrl } from 'next/dist/shared/lib/router/utils/parse-url';
 
 export default function InventorySchedule() {
     const [inventorySchedule, setInventorySchedule] = useState(null);
-
+    const [active, setActive] = useState(false);
     const [loading, setLoading] = useState(true)
     const [pagination, setPagination] = useState(null);
     const [filters, setFilters] = useState({})
@@ -49,17 +50,63 @@ export default function InventorySchedule() {
         })
     }
 
+    const toastMarkup = active ? (
+        <Toast content="Schedule Deleted Successfully!" onDismiss={() => {
+            
+        }} />
+    ) : null;
+    const onDeleteClickActionHandler = (id) => {
+        setActive(true); 
+        axiosInstance.delete(`/api/inventorySchedule/${id}`).then((response) => {
+            window.location.href = `/inventorySchedule`;
+            setActive(false);
+        }).catch((response) => {
+            const error = response.response.data.errors
+            const err = {}
+            Object.keys(error).map((key) => {
+                err[key] = <ul key={key} style={{ margin: 0, listStyle: 'none', padding: 0 }}>
+                    {error[key].map((message, index) => {
+                        let splitedKey = key.split('.');
+                        let fieldTitle = splitedKey[splitedKey.length - 1].replace('_', ' ')
+
+                        if (splitedKey.length > 1) {
+                            return <li key={index} style={{ margin: 0 }}>{message.replace(key, fieldTitle)}</li>
+                        } else {
+                            return <li key={index} style={{ margin: 0 }}>{message}</li>
+                        }
+                    })}
+                </ul>
+            })
+
+            setErrors({ ...err })
+        });
+    }
+
     const getTableData = () => {
         let currentFilter = '?' + new URLSearchParams(filters).toString();
 
         axiosInstance.get('/api/inventorySchedule' + currentFilter).then((response) => {
             let data = response.data.data.map((dt) => {
                 let action = <div className='action-cell'>
-                    <a style={{cursor: 'pointer'}} onClick={() => duplicateItem(dt.id)} >
+                    <a style={{cursor: 'pointer'}} onClick={() => duplicateItem(dt.id)} title="Duplicate Schedule">
                         <Icon source={DuplicateIcon} tone="base" />
                     </a>
-                    <a href={`/inventorySchedule/edit/${dt.id}`} >
+                    <a href={`/inventorySchedule/edit/${dt.id}`} title="Edit Schedule" >
                         <Icon source={EditIcon} tone="base" />
+                    </a>
+                    <a
+                        title="Delete Schedule" 
+                        onClick={(e) => {
+                            const confirmed = confirm("Are you sure you want to delete this schedule?");
+                            if (!confirmed) {
+                              e.preventDefault();
+                            } else {
+                              e.preventDefault();  
+                              onDeleteClickActionHandler(dt.id);  
+                            }
+                          }}
+                        >
+                        <Icon source={DeleteIcon} tone="base" />
                     </a>
                 </div>
 
@@ -130,6 +177,7 @@ export default function InventorySchedule() {
                         <Table pageChange={changePageHandle} resourceName={resourceName} headings={headings} tableData={inventorySchedule} paginationData={pagination} />
                     }
                 </Card>
+                {toastMarkup}
             </div>
         </div>
     </Box>

@@ -43,7 +43,7 @@ export default function NewSettings() {
     })
 
     const onValuesChange = (value, name) => {
-
+        
         setValues((prevValue) => {
             let valueBkp = { ...prevValue }
             valueBkp[name] = value
@@ -55,6 +55,7 @@ export default function NewSettings() {
 
     const toastMarkup = active ? (
         <Toast content="BlackoutdateTime Created Successfully!" onDismiss={() => {
+            setActive(false);
             setValues({
                 start_time: '',
                 end_time: '',
@@ -64,15 +65,14 @@ export default function NewSettings() {
                 apply_to_all_locations: false,
                 locations_id: '',
             })
-            setActive(false)
-
         }} />
     ) : null;
 
 
     const onSaveAndAddAnotherHandler = useCallback(() => {
-
+        setActive(true);
         axiosInstance.post('/api/blackoutDateTime', values).then((response) => {
+            setActive(false);
             setErrors({
                 start_time: null,
                 end_time: null,
@@ -82,8 +82,9 @@ export default function NewSettings() {
                 apply_to_all_locations: false,
                 locations_id: null,
             })
-            setActive(true)
         }).catch((response) => {
+            setActive(false);
+
             const error = response.response.data.errors
             const err = {
                 start_time: null,
@@ -108,11 +109,12 @@ export default function NewSettings() {
     }, [values])
 
     const onClickActionHandler = useCallback(() => {
-
+        setActive(false);
         //values.minimum_cart_contents_config = JSON.stringify(values.minimum_cart_contents_config);
 
         axiosInstance.post('/api/blackoutDateTime', values).then((response) => {
-            window.location.href = `/blackoutSettings`
+            window.location.href = `/blackoutSettings`;
+            setActive(true);
         }).catch((response) => {
             const error = response.response.data.errors
             const err = {
@@ -239,9 +241,10 @@ export default function NewSettings() {
                     <Divider borderColor="border" />
 
                     <div style={{ marginBottom: "10px", marginTop: "10px", display: 'flex', justifyContent: 'end' }} >
-                        <div style={{ marginRight: '10px' }}><Button loading={active} onClick={onSaveAndAddAnotherHandler}>Save & Create Another</Button></div>
-                        <Button loading={active} onClick={onClickActionHandler}>Save</Button>
-                    </div>
+                        <div style={{ marginRight: '10px' }}>
+                            <Button loading={active} onClick={onSaveAndAddAnotherHandler} disabled={active} >{active ? 'Submitting...' : 'Save & Create Another'}</Button></div>
+                            <Button loading={active} onClick={onClickActionHandler} disabled={active} > {active ? 'Submitting...' : 'Save'} </Button>
+                        </div>
 
                 </div>
             </Card>

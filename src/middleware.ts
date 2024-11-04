@@ -11,4 +11,5 @@ export async function middleware(request, event) {
     }   
     
     return NextResponse.next();
+    
 }

@@ -60,16 +60,18 @@ export default function NewSettings() {
             setSelectedProduct(null);
             setProductVariants([])
             setProductInputValue('')
-            setActive(false)
+            setActive(false);
 
         }} />
     ) : null;
 
 
     const onSaveAndAddAnotherHandler = useCallback(() => {
+        setActive(false);
+
         axiosInstance.post('/api/inventorySchedule', values).then((response) => {
             setErrors({})
-            setActive(true)
+            setActive(true);
         }).catch((response) => {
             const error = response.response.data.errors
             const err = {}
@@ -87,8 +89,10 @@ export default function NewSettings() {
     }, [values])
 
     const onClickActionHandler = useCallback(() => {
+        setActive(false);
         axiosInstance.post('/api/inventorySchedule', values).then((response) => {
-            window.location.href = `/inventorySchedule`
+            window.location.href = `/inventorySchedule`;
+            setActive(true);
         }).catch((response) => {
             const error = response.response.data.errors
             const err = {}
@@ -445,8 +449,12 @@ export default function NewSettings() {
                     <Divider borderColor="border" />
 
                     <div style={{ marginBottom: "10px", marginTop: "10px", display: 'flex', justifyContent: 'end' }} >
-                        <div style={{ marginRight: '10px' }}><Button loading={active} onClick={onSaveAndAddAnotherHandler} > Save & Create Another </Button></div>
-                        <Button loading={active} onClick={onClickActionHandler}>Save</Button>
+                        <div style={{ marginRight: '10px' }}>
+                            <Button loading={active} onClick={onSaveAndAddAnotherHandler} disabled={active} >{active ? 'Submitting...' : 'Save & Create Another'}</Button>
+                        </div>
+                        <Button loading={active} onClick={onClickActionHandler} disabled={active} >{active ? 'Submitting...' : 'Save'} </Button>
+
+
                     </div>
                 </div>
             </Card>

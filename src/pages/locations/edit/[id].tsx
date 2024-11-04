@@ -187,9 +187,10 @@ export default function EditLocations() {
     ) : null;
 
     const onSaveAndKeepEditingHandler = useCallback(() => {
+        setActive(false);
         axiosInstance.put(`/api/shopifyLocation/${processId}`, values).then((response) => {
             setErrors({})
-            setActive(true)
+            setActive(true);
         }).catch((response) => {
             const error = response.response.data.errors
             const err = {}
@@ -213,8 +214,10 @@ export default function EditLocations() {
     }, [values])
 
     const onClickActionHandler = () => {
+        setActive(false);
         axiosInstance.put(`/api/shopifyLocation/${processId}`, values).then((response) => {
-            window.location.href = `/locations`
+            window.location.href = `/locations`;
+            setActive(true);
         }).catch((response) => {
             const error = response.response.data.errors
             const err = {}
@@ -748,8 +751,10 @@ export default function EditLocations() {
                     <Divider borderColor="border" />
 
                     <div style={{ marginBottom: "10px", marginTop: "10px", display: 'flex', justifyContent: 'end' }} >
-                        <div style={{ marginRight: '10px' }}><Button loading={active} onClick={onSaveAndKeepEditingHandler}>Save & Keep Editing</Button></div>
-                        <Button loading={active} onClick={onClickActionHandler}>Save</Button>
+                        <div style={{ marginRight: '10px' }}>
+                            <Button loading={active} onClick={onSaveAndKeepEditingHandler} disabled={active} > {active ? 'Submitting...' : 'Save & Keep Editing'}</Button>
+                        </div>
+                        <Button loading={active} onClick={onClickActionHandler} disabled={active} > {active ? 'Submitting...' : 'Save'}</Button>
                     </div>
                     {/* <ButtonEnd onClickAction={onClickActionHandler} buttonName="Create Ingredient" /> */}
                 </div>

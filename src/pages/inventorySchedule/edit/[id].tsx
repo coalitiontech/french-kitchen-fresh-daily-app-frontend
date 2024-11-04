@@ -36,6 +36,7 @@ export default function EditSettings() {
                 const dt = response.data;
                 setSelectedProduct(dt.shopify_product_id);
                 setValues({
+                    id: dt.id,
                     quantity: dt.quantity,
                     next_run_date: dt.next_run_date,
                     starting_date: moment(dt.starting_date).format('YYYY-MM-DD HH:mm:ss'),
@@ -57,6 +58,7 @@ export default function EditSettings() {
     }, [processId])
 
     const onValuesChange = (value, name, index) => {
+        console.log(name+ '-', value);
         setValues((prevValue) => {
             let valueBkp = { ...prevValue }
             valueBkp[name] = value
@@ -72,6 +74,7 @@ export default function EditSettings() {
     ) : null;
 
     const onSaveAndKeepEditingHandler = useCallback(() => {
+        console.log('values= ', values);
 
         axiosInstance.put(`/api/inventorySchedule/${processId}`, values).then((response) => {
             setErrors({})
@@ -99,6 +102,7 @@ export default function EditSettings() {
     }, [values])
 
     const onClickActionHandler = () => {
+        console.log('values= ', values);
         axiosInstance.put(`/api/inventorySchedule/${processId}`, values).then((response) => {
             window.location.href = `/inventorySchedule`
         }).catch((response) => {
@@ -328,6 +332,11 @@ export default function EditSettings() {
                     <div style={{ marginBottom: "10px" }}>
                         <Text variant="heading2xl" alignment="center" as={'h1'} >Edit Inventory Schedule</Text>
                     </div>
+                    <input
+                        type="hidden"
+                        name="id"
+                        value={processId}
+                    />
 
                     <div style={{ width: '100%', display: 'flex' }}>
 
@@ -471,8 +480,10 @@ export default function EditSettings() {
                     <Divider borderColor="border" />
 
                     <div style={{ marginBottom: "10px", marginTop: "10px", display: 'flex', justifyContent: 'end' }} >
-                        <div style={{ marginRight: '10px' }}><Button loading={active} onClick={onSaveAndKeepEditingHandler}>Save & Keep Editing</Button></div>
-                        <Button loading={active} onClick={onClickActionHandler}>Save</Button>
+                        <div style={{ marginRight: '10px' }}>
+                            <Button loading={active} onClick={onSaveAndKeepEditingHandler} disabled={active}>{active ? 'Submitting...' : 'Save & Keep Editing'}</Button>
+                        </div>
+                        <Button loading={active} onClick={onClickActionHandler} disabled={active}>{active ? 'Submitting...' : 'Save'}</Button>
                     </div>
                     {/* <ButtonEnd onClickAction={onClickActionHandler} buttonName="Create Ingredient" /> */}
                 </div>

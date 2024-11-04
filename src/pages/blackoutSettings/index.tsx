@@ -1,5 +1,5 @@
 import Table from '@/Components/Table';
-import { Box, Card, Icon, Text, Button } from '@shopify/polaris';
+import { Box, Card, Icon, Text, Button, Toast } from '@shopify/polaris';
 import { useCallback, useEffect, useState } from 'react';
 import axiosInstance from '@/plugins/axios';
 import ButtonEnd from '@/Components/ButtonEnd';
@@ -7,7 +7,8 @@ import {
     DuplicateIcon,
     EditIcon,
     SkeletonIcon,
-    ViewMajor
+    ViewMajor,
+    DeleteIcon
 } from '@shopify/polaris-icons';
 import { parseUrl } from 'next/dist/shared/lib/router/utils/parse-url';
 
@@ -17,6 +18,7 @@ export default function BlackoutDateTime() {
     const [loading, setLoading] = useState(true)
     const [pagination, setPagination] = useState(null);
     const [filters, setFilters] = useState({})
+    const [active, setActive] = useState(false);
 
     const headings = [
         { title: 'ID' },
@@ -59,6 +61,39 @@ export default function BlackoutDateTime() {
         })
     }
 
+    const toastMarkup = active ? (
+        <Toast content="Setting Deleted Successfully!" onDismiss={() => {
+            
+        }} />
+    ) : null;
+
+    const onDeleteClickActionHandler = (id) => {
+        setActive(true); 
+        axiosInstance.delete(`/api/blackoutDateTime/${id}`).then((response) => {
+            window.location.href = `/blackoutSettings`;
+            setActive(false);
+        }).catch((response) => {
+            const error = response.response.data.errors
+            const err = {}
+            Object.keys(error).map((key) => {
+                err[key] = <ul key={key} style={{ margin: 0, listStyle: 'none', padding: 0 }}>
+                    {error[key].map((message, index) => {
+                        let splitedKey = key.split('.');
+                        let fieldTitle = splitedKey[splitedKey.length - 1].replace('_', ' ')
+
+                        if (splitedKey.length > 1) {
+                            return <li key={index} style={{ margin: 0 }}>{message.replace(key, fieldTitle)}</li>
+                        } else {
+                            return <li key={index} style={{ margin: 0 }}>{message}</li>
+                        }
+                    })}
+                </ul>
+            })
+
+            setErrors({ ...err })
+        });
+    }
+
     const getTableData = () => {
         let currentFilter = '?' + new URLSearchParams(filters).toString();
 
@@ -70,6 +105,20 @@ export default function BlackoutDateTime() {
                     </a>
                     <a href={`/blackoutSettings/edit/${dt.id}`} >
                         <Icon source={EditIcon} tone="base" />
+                    </a>
+                    <a
+                        title="Delete Setting" 
+                        onClick={(e) => {
+                            const confirmed = confirm("Are you sure you want to delete this setting?");
+                            if (!confirmed) {
+                              e.preventDefault();
+                            } else {
+                              e.preventDefault();  
+                              onDeleteClickActionHandler(dt.id);  
+                            }
+                          }}
+                        >
+                        <Icon source={DeleteIcon} tone="base" />
                     </a>
                 </div>
 
@@ -133,6 +182,7 @@ export default function BlackoutDateTime() {
                         <Table pageChange={changePageHandle} resourceName={resourceName} headings={headings} tableData={blackoutDateTime} paginationData={pagination} />
                     }
                 </Card>
+                {toastMarkup}
             </div>
         </div>
     </Box>

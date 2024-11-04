@@ -15,7 +15,7 @@ export default function NavigationComponent({url}) {
               selected: (url.includes('/locations'))
             },
             {
-              url: '/settings/1',
+              url: '/settings',
               label: 'Settings',
               icon: ProfileIcon,
               selected: (url.includes('/settings'))
