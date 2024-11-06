@@ -79,7 +79,7 @@ export default function BlackoutDateTime() {
                     end_time: dt.end_time ? dt.end_time : '-',
                     start_date: dt.start_date ? dt.start_date : '-',
                     end_date: dt.end_date ? dt.end_date : '-',
-                    status: dt.status == 1 ? <div className='toggle-vip'><Icon source={SkeletonIcon} tone="success" /></div> : <div className='toggle-vip'><Icon source={SkeletonIcon} tone="critical" /></div>,
+                    status: <div className='toggle-vip'><span style={{padding: '4px 8px', backgroundColor: dt.status == 1 ? '#81bdae' : "#f0959b", color: 'black', borderRadius: '5px', fontWeight: 700}}>{dt.status == 1 ? 'Is Active' : "Not Active"}</span></div>,
                     apply_to_all_locations: (dt.apply_to_all_locations == 1 && dt.apply_to_all_locations != '') ? <div className='toggle-vip'><Icon source={SkeletonIcon} tone="success" /></div> : <div className='toggle-vip'><Icon source={SkeletonIcon} tone="critical" /></div>,
                     action: action
                 }
