@@ -21,6 +21,7 @@ export default function InventorySchedule() {
     const headings = [
         { title: 'ID' },
         { title: 'Image' },
+        { title: 'Display Name' },
         { title: 'Product Title' },
         { title: 'Overwrite Stock' },
         { title: 'Is Active' },
@@ -71,7 +72,8 @@ export default function InventorySchedule() {
 
                 return {
                     id: dt.id,
-                    image: thumbnail,
+                    image: dt.product_image ? thumbnail : '',
+                    display_name: dt.display_name ? dt.display_name : '-',
                     title: dt.title,
                     overwrite_stock: (dt.overwrite_stock == 1 && dt.overwrite_stock != '') ? <div className='toggle-vip'><Icon source={SkeletonIcon} tone="success" /></div> : <div className='toggle-vip'><Icon source={SkeletonIcon} tone="critical" /></div>,
                     is_active: dt.is_active == 1 ? <div className='toggle-vip'><Icon source={SkeletonIcon} tone="success" /></div> : <div className='toggle-vip'><Icon source={SkeletonIcon} tone="critical" /></div>,

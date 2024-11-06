@@ -16,6 +16,7 @@ export default function NewSettings() {
 
     const [values, setValues] = useState({
         quantity: '',
+        display_name: '',
         blackout_dates: '',
         overwrite_stock: false,
         is_active: false,
@@ -46,6 +47,7 @@ export default function NewSettings() {
         <Toast content="Inventory Schedule Added Successfully!" onDismiss={() => {
             setValues({
                 quantity: '',
+                display_name: '',
                 blackout_dates: '',
                 overwrite_stock: false,
                 is_active: false,
@@ -309,7 +311,7 @@ export default function NewSettings() {
 
                     <div style={{ width: '100%', display: 'flex' }}>
 
-                        <div style={{ width: '70%', padding: '15px' }}>
+                        <div style={{ width: '55%', padding: '15px' }}>
                             <Autocomplete
                                 title="Product"
                                 options={productOptions}
@@ -323,6 +325,14 @@ export default function NewSettings() {
                             />
                         </div>
 
+                        <div style={{ width: '15%', padding: '15px' }}>
+                            <TextField
+                                placeholder="Display Name"
+                                label="Display Name"
+                                value={values.display_name}
+                                onChange={(value) => onValuesChange(value, 'display_name')}
+                            />
+                        </div>
                         <div style={{ width: '15%', padding: '15px' }}>
                             <h3> Active</h3>
                             <StatusSwitch status={values.is_active} arrayKey={'is_active'} changeStatus={onValuesChange} />

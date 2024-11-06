@@ -37,6 +37,7 @@ export default function EditSettings() {
                 setSelectedProduct(dt.shopify_product_id);
                 setValues({
                     quantity: dt.quantity,
+                    display_name: dt.display_name ? dt.display_name : '',
                     next_run_date: dt.next_run_date,
                     starting_date: moment(dt.starting_date).format('YYYY-MM-DD HH:mm:ss'),
                     stock_time: moment(`${dt.starting_date} ${dt.stock_time}`).format('YYYY-MM-DD HH:mm:ss'),
@@ -331,7 +332,7 @@ export default function EditSettings() {
 
                     <div style={{ width: '100%', display: 'flex' }}>
 
-                        <div style={{ width: '70%', padding: '15px' }}>
+                        <div style={{ width: '55%', padding: '15px' }}>
                             <Autocomplete
                                 title="Product"
                                 options={productOptions}
@@ -342,6 +343,15 @@ export default function EditSettings() {
                                 listTitle="Suggested Products"
                                 fieldName="shopify_product_id"
                                 fieldKey="shopify_product_id"
+                            />
+                        </div>
+
+                        <div style={{ width: '15%', padding: '15px' }}>
+                            <TextField
+                                placeholder="Display Name"
+                                label="Display Name"
+                                value={values.display_name}
+                                onChange={(value) => onValuesChange(value, 'display_name')}
                             />
                         </div>
 
