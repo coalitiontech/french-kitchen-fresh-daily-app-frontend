@@ -5,7 +5,7 @@ import "react-datetime/css/react-datetime.css";
 import moment from 'moment';
 import styles from './DateTimeSelect.module.css';
 
-export default function DateTimeSelect({ label, name, value, onChange, isDate, isTime, initialViewMode, format }) {
+export default function DateTimeSelect({ label, name, value, onChange, isDate, isTime, initialViewMode, format, showDate = true }) {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedDate, setSelectedDate] = useState(value ? moment(value).seconds(0).toDate() : new Date());
 
@@ -26,15 +26,22 @@ export default function DateTimeSelect({ label, name, value, onChange, isDate, i
     setIsOpen(false);
   };
 
+  const handleClear = () => {
+    const formattedDate = '';
+
+    onChange(formattedDate);
+    setIsOpen(false);
+  };
+
   const formattedDate = moment(selectedDate).seconds(0).format(format);
 
   return (
     <div className={styles.datetimeContainer}>
-      {label && <label htmlFor={name}>{label}</label>}
+      {label && <label style={{ maxWidth: '300px' }} htmlFor={name}>{label}</label>}
       <input
         type="text"
         readOnly
-        value={formattedDate}
+        value={showDate ? formattedDate : ''}
         onClick={() => setIsOpen(true)}
         className={styles.polarisTextfield}
         id={name}
@@ -54,7 +61,10 @@ export default function DateTimeSelect({ label, name, value, onChange, isDate, i
             closeOnSelect={true}
             onNavigate={() => { }}
           />
-          <button className={styles.confirmButton} onClick={handleConfirm}>Select</button>
+          <div className={`${label == 'Ending Date' ? styles.twoButton : ''}`}>
+            <button className={styles.clearButton} onClick={handleClear}>Clear</button>
+            <button className={`${styles.confirmButton} ${label == 'Ending Date' ? styles.hasClear : ''}`} onClick={handleConfirm}>Select</button>
+          </div>
 
         </div>
       )}

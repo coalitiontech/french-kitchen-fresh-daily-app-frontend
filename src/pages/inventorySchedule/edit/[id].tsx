@@ -40,6 +40,7 @@ export default function EditSettings() {
                     display_name: dt.display_name ? dt.display_name : '',
                     next_run_date: dt.next_run_date,
                     starting_date: moment(dt.starting_date).format('YYYY-MM-DD HH:mm:ss'),
+                    ending_date: dt.ending_date ? moment(dt.ending_date).format('YYYY-MM-DD HH:mm:ss') : '',
                     stock_time: moment(`${dt.starting_date} ${dt.stock_time}`).format('YYYY-MM-DD HH:mm:ss'),
                     overwrite_stock: dt.overwrite_stock ? true : false,
                     is_active: dt.is_active == 1 ? true : false,
@@ -459,6 +460,27 @@ export default function EditSettings() {
                                 style={{ width: "30%", overflow: "visible" }}
                             />
                         </div>
+
+                        {
+                            values.recurring_config.type !== 'dnr' &&
+                            <div style={{ width: '25%', padding: '15px' }}>
+                                <DateTimeSelect
+                                    label={"Ending Date"}
+                                    name="ending_date"
+                                    value={values.ending_date}
+                                    showDate={values.ending_date}
+                                    isDate={true}
+                                    isTime={false}
+                                    format='YYYY-MM-DD'
+                                    initialViewMode="days"
+                                    autoComplete="off"
+                                    onChange={(value) => {
+                                        onValuesChange(value, 'ending_date')
+                                    }}
+                                    style={{ width: "30%", overflow: "visible" }}
+                                />
+                            </div>
+                        }
 
                         <div style={{ width: '15%', padding: '15px' }}>
                             <h3> Apply To All Locations</h3>

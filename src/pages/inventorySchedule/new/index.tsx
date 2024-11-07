@@ -11,7 +11,6 @@ import StatusSwitch from '../../../Components/Switch';
 
 export default function NewSettings() {
 
-
     const [active, setActive] = useState(false);
 
     const [values, setValues] = useState({
@@ -26,6 +25,7 @@ export default function NewSettings() {
         apply_to_all_locations: false,
         locations_id: '',
         starting_date: moment().format('YYYY-MM-DD'),
+        ending_date: '',
         stock_time: moment().format('YYYY-MM-DD HH:mm:ss'),
     })
 
@@ -57,6 +57,7 @@ export default function NewSettings() {
                 apply_to_all_locations: false,
                 locations_id: '',
                 starting_date: moment().format('YYYY-MM-DD'),
+                ending_date: '',
                 stock_time: moment().seconds(0).format('YYYY-MM-DD HH:mm:ss'),
             })
             setSelectedProduct(null);
@@ -434,6 +435,28 @@ export default function NewSettings() {
                                 style={{ width: "30%", overflow: "visible" }}
                             />
                         </div>
+
+                        {
+                            values.recurring_config.type !== 'dnr' &&
+                            <div style={{ width: '25%', padding: '15px' }}>
+                                <DateTimeSelect
+                                    label={"Ending Date"}
+                                    name="ending_date"
+                                    value={values.ending_date}
+                                    showDate={values.ending_date}
+                                    isDate={true}
+                                    isTime={false}
+                                    format='YYYY-MM-DD'
+                                    initialViewMode="days"
+                                    autoComplete="off"
+                                    onChange={(value) => {
+                                        onValuesChange(value, 'ending_date')
+                                    }}
+                                    style={{ width: "30%", overflow: "visible" }}
+                                />
+                            </div>
+                        }
+
                         <div style={{ width: '15%', padding: '15px' }}>
                             <h3 > Apply To All Locations</h3>
                             <StatusSwitch status={values.apply_to_all_locations} arrayKey={'apply_to_all_locations'} changeStatus={onValuesChange} />

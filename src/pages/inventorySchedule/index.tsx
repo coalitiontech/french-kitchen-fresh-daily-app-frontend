@@ -25,6 +25,8 @@ export default function InventorySchedule() {
         { title: 'Product Title' },
         { title: 'Overwrite Stock' },
         { title: 'Is Active' },
+        { title: 'Starting Date' },
+        { title: 'Ending Date' },
         { title: 'Next Run Date' },
         { title: 'Actions', alignment: 'end' }
     ]
@@ -77,6 +79,8 @@ export default function InventorySchedule() {
                     title: dt.title,
                     overwrite_stock: (dt.overwrite_stock == 1 && dt.overwrite_stock != '') ? <div className='toggle-vip'><Icon source={SkeletonIcon} tone="success" /></div> : <div className='toggle-vip'><Icon source={SkeletonIcon} tone="critical" /></div>,
                     is_active: dt.is_active == 1 ? <div className='toggle-vip'><Icon source={SkeletonIcon} tone="success" /></div> : <div className='toggle-vip'><Icon source={SkeletonIcon} tone="critical" /></div>,
+                    starting_date: dt.starting_date ? dt.starting_date : '-',
+                    ending_date: dt.ending_date ? dt.next_run_date : '-',
                     next_run_date: (dt.next_run_date && dt.is_active == 1) ? dt.next_run_date : '-',
                     action: action
                 }
