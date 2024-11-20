@@ -11,8 +11,8 @@ import {
     Tag,
     Link,
 } from '@shopify/polaris';
-import type { IndexTableRowProps, IndexTableProps, IndexFiltersProps, TabProps, TableData } from '@shopify/polaris';
-import React, { Fragment, useCallback, useEffect, useState } from 'react';
+import type { TableData } from '@shopify/polaris';
+import React, { useCallback, useEffect, useState } from 'react';
 import axiosInstance from '../../plugins/axios';
 
 const currentDate = new Date();
@@ -92,10 +92,12 @@ export default function WithNestedRowsExample() {
                 item[0] = <Link
                     target='_blank'
                     removeUnderline
-                    url={`${process.env.NEXT_PUBLIC_SHOPIFY_ADMIN_URL}/orders/${item[0]}`}
+                    url={`${process.env.NEXT_PUBLIC_SHOPIFY_ADMIN_URL}/orders/${item[item.length - 1]}`}
                 >
                     {`#${item[0]}`}
                 </Link>
+
+                item = item.slice(0, -1);
                 return item;
             }));
         })
