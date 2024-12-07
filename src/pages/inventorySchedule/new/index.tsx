@@ -11,11 +11,11 @@ import StatusSwitch from '../../../Components/Switch';
 
 export default function NewSettings() {
 
-
     const [active, setActive] = useState(false);
 
     const [values, setValues] = useState({
         quantity: '',
+        display_name: '',
         blackout_dates: '',
         overwrite_stock: false,
         is_active: false,
@@ -25,6 +25,7 @@ export default function NewSettings() {
         apply_to_all_locations: false,
         locations_id: '',
         starting_date: moment().format('YYYY-MM-DD'),
+        ending_date: '',
         stock_time: moment().format('YYYY-MM-DD HH:mm:ss'),
     })
 
@@ -46,6 +47,7 @@ export default function NewSettings() {
         <Toast content="Inventory Schedule Added Successfully!" onDismiss={() => {
             setValues({
                 quantity: '',
+                display_name: '',
                 blackout_dates: '',
                 overwrite_stock: false,
                 is_active: false,
@@ -55,6 +57,7 @@ export default function NewSettings() {
                 apply_to_all_locations: false,
                 locations_id: '',
                 starting_date: moment().format('YYYY-MM-DD'),
+                ending_date: '',
                 stock_time: moment().seconds(0).format('YYYY-MM-DD HH:mm:ss'),
             })
             setSelectedProduct(null);
@@ -313,7 +316,7 @@ export default function NewSettings() {
 
                     <div style={{ width: '100%', display: 'flex' }}>
 
-                        <div style={{ width: '70%', padding: '15px' }}>
+                        <div style={{ width: '55%', padding: '15px' }}>
                             <Autocomplete
                                 title="Product"
                                 options={productOptions}
@@ -327,6 +330,14 @@ export default function NewSettings() {
                             />
                         </div>
 
+                        <div style={{ width: '15%', padding: '15px' }}>
+                            <TextField
+                                placeholder="Display Name"
+                                label="Display Name"
+                                value={values.display_name}
+                                onChange={(value) => onValuesChange(value, 'display_name')}
+                            />
+                        </div>
                         <div style={{ width: '15%', padding: '15px' }}>
                             <h3> Active</h3>
                             <StatusSwitch status={values.is_active} arrayKey={'is_active'} changeStatus={onValuesChange} />
@@ -428,6 +439,28 @@ export default function NewSettings() {
                                 style={{ width: "30%", overflow: "visible" }}
                             />
                         </div>
+
+                        {
+                            values.recurring_config.type !== 'dnr' &&
+                            <div style={{ width: '25%', padding: '15px' }}>
+                                <DateTimeSelect
+                                    label={"Ending Date"}
+                                    name="ending_date"
+                                    value={values.ending_date}
+                                    showDate={values.ending_date}
+                                    isDate={true}
+                                    isTime={false}
+                                    format='YYYY-MM-DD'
+                                    initialViewMode="days"
+                                    autoComplete="off"
+                                    onChange={(value) => {
+                                        onValuesChange(value, 'ending_date')
+                                    }}
+                                    style={{ width: "30%", overflow: "visible" }}
+                                />
+                            </div>
+                        }
+
                         <div style={{ width: '15%', padding: '15px' }}>
                             <h3 > Apply To All Locations</h3>
                             <StatusSwitch status={values.apply_to_all_locations} arrayKey={'apply_to_all_locations'} changeStatus={onValuesChange} />

@@ -32,6 +32,18 @@ export default function NavigationComponent({url}) {
               icon: CalendarIcon,
               selected: (url.includes('/blackoutSettings'))
             },
+            {
+              url: '/scheduledOrders',
+              label: 'Scheduled Orders',
+              icon: CalendarIcon,
+              selected: (url.includes('/scheduledOrders'))
+            },
+            {
+              url: '/scheduledProducts',
+              label: 'Scheduled Products',
+              icon: CalendarIcon,
+              selected: (url.includes('/scheduledProducts'))
+            },
           ]}
         />
       </Navigation>

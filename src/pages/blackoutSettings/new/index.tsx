@@ -162,6 +162,7 @@ export default function NewSettings() {
                                 type='number'
                                 max={values.end_time}
                                 value={values.start_time}
+                                error={errors.start_time ? errors.start_time : false}
                                 autoComplete="off"
                                 onChange={(value) => {
                                     onValuesChange(value, 'start_time')
@@ -175,6 +176,7 @@ export default function NewSettings() {
                                 type='number'
                                 min={values.start_time}
                                 value={values.end_time}
+                                error={errors.end_time ? errors.end_time : false}
                                 autoComplete="off"
                                 onChange={(value) => {
                                     onValuesChange(value, 'end_time')
@@ -191,6 +193,7 @@ export default function NewSettings() {
                                 type='date'
                                 max={values.end_date}
                                 value={values.start_date}
+                                error={errors.start_date ? errors.start_date : false}
                                 name='start_date'
                                 autoComplete="off"
                                 onChange={(value) => {
@@ -205,6 +208,7 @@ export default function NewSettings() {
                                 type='date'
                                 min={values.start_date}
                                 value={values.end_date}
+                                error={errors.end_date ? errors.end_date : false}
                                 name='end_date'
                                 autoComplete="off"
                                 onChange={(value) => {
@@ -230,7 +234,7 @@ export default function NewSettings() {
                                     field="locations_id"
                                     title="Select Location"
                                     onFieldsChange={onValuesChange}
-                                    validationErrors={errors.locations}
+                                    validationErrors={errors.locations_id}
                                     isEditing={true}
                                     editingValues={values.locations}
                                     listTitle={"Suggested Locations"}

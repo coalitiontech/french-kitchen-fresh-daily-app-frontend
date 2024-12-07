@@ -29,10 +29,10 @@ export default function EditSettings() {
                 const dt = response.data;
 
                 setValues({
-                    start_time: dt.start_time ? dt.start_time : '-',
-                    end_time: dt.end_time ? dt.end_time : '-',
-                    start_date: dt.start_date ? dt.start_date : '-',
-                    end_date: dt.end_date ? dt.end_date : '-',
+                    start_time: dt.start_time ? dt.start_time : '',
+                    end_time: dt.end_time ? dt.end_time : '',
+                    start_date: dt.start_date ? dt.start_date : '',
+                    end_date: dt.end_date ? dt.end_date : '',
                     status: dt.status == 1 ? true : false,
                     apply_to_all_locations: (dt.apply_to_all_locations == 1 && dt.apply_to_all_locations != '') ? true : false,
                     locations_id: dt.locations_id,
@@ -139,6 +139,7 @@ export default function EditSettings() {
                                 type='number'
                                 max={values.end_time}
                                 value={values.start_time}
+                                error={errors.start_time ? errors.start_time : false}
                                 autoComplete="off"
                                 onChange={(value) => {
                                     onValuesChange(value, 'start_time')
@@ -152,6 +153,7 @@ export default function EditSettings() {
                                 type='number'
                                 min={values.start_time}
                                 value={values.end_time}
+                                error={errors.end_time ? errors.end_time : false}
                                 autoComplete="off"
                                 onChange={(value) => {
                                     onValuesChange(value, 'end_time')
@@ -168,6 +170,7 @@ export default function EditSettings() {
                                 type='date'
                                 max={values.end_date}
                                 value={values.start_date}
+                                error={errors.start_date ? errors.start_date : false}
                                 name='start_date'
                                 autoComplete="off"
                                 onChange={(value) => {
@@ -182,6 +185,7 @@ export default function EditSettings() {
                                 type='date'
                                 min={values.start_date}
                                 value={values.end_date}
+                                error={errors.end_date ? errors.end_date : false}
                                 name='end_date'
                                 autoComplete="off"
                                 onChange={(value) => {
