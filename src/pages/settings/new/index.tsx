@@ -74,13 +74,14 @@ export default function NewSettings() {
 
 
     const onSaveAndAddAnotherHandler = useCallback(() => {
-         
+        setActive(false);
         axiosInstance.post('/api/settings', values).then((response) => {
             setErrors({
                 minimum_cart_contents_config: null
             })
-            setActive(true)
+            setActive(true);
         }).catch((response) => {
+            setActive(true);
             const error = response.response.data.errors
             const err = {
                 minimum_cart_contents_config: null
@@ -99,9 +100,12 @@ export default function NewSettings() {
     }, [values])
 
     const onClickActionHandler = useCallback(() => {
+        setActive(false);
         axiosInstance.post('/api/settings', values).then((response) => {
-            window.location.href = `/settings`
+            window.location.href = `/settings`;
+            setActive(true);
         }).catch((response) => {
+            setActive(true);
             const error = response.response.data.errors
             const err = {
                 minimum_cart_contents_config: null
@@ -208,8 +212,10 @@ export default function NewSettings() {
                      <Divider borderColor="border" />
 
                     <div style={{ marginBottom: "10px", marginTop: "10px", display: 'flex', justifyContent: 'end' }} >
-                        <div style={{ marginRight: '10px' }}><Button loading={active} onClick={onSaveAndAddAnotherHandler}>Save & Create Another</Button></div>
-                        <Button loading={active} onClick={onClickActionHandler}>Save</Button>
+                        <div style={{ marginRight: '10px' }}>
+                            <Button loading={active} onClick={onSaveAndAddAnotherHandler} disabled={active} > {active ? 'Submitting...' : 'Save & Create Another'}</Button>
+                        </div>
+                        <Button loading={active} onClick={onClickActionHandler} disabled={active} > {active ? 'Submitting...' : 'Save'} </Button>
                     </div>
                      
                 </div>

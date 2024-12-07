@@ -59,10 +59,13 @@ export default function EditSettings() {
     ) : null;
 
     const onSaveAndKeepEditingHandler = useCallback(() => {
+        setActive(false);
         axiosInstance.put(`/api/blackoutDateTime/${processId}`, values).then((response) => {
-            setErrors({})
-            setActive(true)
+            setErrors({});
+            setActive(true);
         }).catch((response) => {
+
+            setActive(false);
             const error = response.response.data.errors
             const err = {}
             Object.keys(error).map((key) => {
@@ -85,8 +88,12 @@ export default function EditSettings() {
     }, [values])
 
     const onClickActionHandler = () => {
+        setActive(false);
+        console.log(active);
         axiosInstance.put(`/api/blackoutDateTime/${processId}`, values).then((response) => {
-            window.location.href = `/blackoutSettings`
+            window.location.href = `/blackoutSettings`;
+            setActive(true);
+
         }).catch((response) => {
             const error = response.response.data.errors
             const err = {}
@@ -214,8 +221,10 @@ export default function EditSettings() {
                     <Divider borderColor="border" />
 
                     <div style={{ marginBottom: "10px", marginTop: "10px", display: 'flex', justifyContent: 'end' }} >
-                        <div style={{ marginRight: '10px' }}><Button loading={active} onClick={onSaveAndKeepEditingHandler}>Save & Keep Editing</Button></div>
-                        <Button loading={active} onClick={onClickActionHandler}>Save</Button>
+                        <div style={{ marginRight: '10px' }}>
+                            <Button loading={active} onClick={onSaveAndKeepEditingHandler} disabled={active} > {active ? 'Submitting...' : 'Save & Keep Editing'}</Button>
+                        </div>
+                        <Button loading={active} onClick={onClickActionHandler} disabled={active} > {active ? 'Submitting...' : 'Save'} </Button>
                     </div>
                     {/* <ButtonEnd onClickAction={onClickActionHandler} buttonName="Create Ingredient" /> */}
                 </div>

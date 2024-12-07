@@ -81,12 +81,11 @@ export default function EditSettings() {
     ) : null;
 
     const onSaveAndKeepEditingHandler = useCallback(() => {
-
         // values.minimum_cart_contents_config = JSON.stringify(values.minimum_cart_contents_config);
-
+        setActive(false);
         axiosInstance.put(`/api/settings/${processId}`, values).then((response) => {
             setErrors({})
-            setActive(true)
+            setActive(true);
         }).catch((response) => {
             const error = response.response.data.errors
             const err = {}
@@ -110,11 +109,13 @@ export default function EditSettings() {
     }, [values])
 
     const onClickActionHandler = () => { 
+        setActive(true);
 
         // values.minimum_cart_contents_config = JSON.stringify(values.minimum_cart_contents_config);
 
         axiosInstance.put(`/api/settings/${processId}`, values).then((response) => {
-            window.location.href = `/settings`
+            window.location.href = `/settings`;
+            setActive(false);
         }).catch((response) => {
             const error = response.response.data.errors
              

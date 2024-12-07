@@ -24,7 +24,7 @@ export default function App({ Component, pageProps }: AppProps) {
           <a href="/inventorySchedule">Inventory Schedule</a>
           <a href="/blackoutSettings">Blackout Settings</a>
           <a href="/locations">Locations</a>
-          <a href="/settings/1">Settings</a>
+          <a href="/settings">Settings</a>
           <a href="/scheduledOrders">Scheduled Orders</a>
           <a href="/scheduledProducts">Scheduled Products</a>
         </NavMenu>
