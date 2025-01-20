@@ -252,6 +252,11 @@ export default function EditLocations() {
 
     const tabs = [
         {
+            id: 'sunday',
+            content: 'Sunday',
+            panelID: 'sunday',
+        },
+        {
             id: 'monday',
             content: 'Monday',
             panelID: 'monday',
@@ -281,11 +286,7 @@ export default function EditLocations() {
             content: 'Saturday',
             panelID: 'saturday',
         },
-        {
-            id: 'sunday',
-            content: 'Sunday',
-            panelID: 'sunday',
-        },
+        
     ];
 
     return !isLoading && <Box minHeight='100vh' maxWidth="100%" as='section' background="bg">
