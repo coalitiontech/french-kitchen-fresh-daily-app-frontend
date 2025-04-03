@@ -27,6 +27,8 @@ export default function App({ Component, pageProps }: AppProps) {
           {/* <a href="/settings">Settings</a> */}
           <a href="/scheduledOrders">Scheduled Orders</a>
           <a href="/scheduledProducts">Scheduled Products</a>
+          <a href="/storeSettings">Store Settings</a>
+
         </NavMenu>
       }
       {
