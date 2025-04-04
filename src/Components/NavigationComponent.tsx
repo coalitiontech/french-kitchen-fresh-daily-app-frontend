@@ -14,12 +14,12 @@ export default function NavigationComponent({url}) {
               icon: BookOpenIcon,
               selected: (url.includes('/locations'))
             },
-            {
-              url: '/settings',
-              label: 'Settings',
-              icon: ProfileIcon,
-              selected: (url.includes('/settings'))
-            },
+            // {
+            //   url: '/settings',
+            //   label: 'Settings',
+            //   icon: ProfileIcon,
+            //   selected: (url.includes('/settings'))
+            // },
             {
               url: '/inventorySchedule',
               label: 'Inventory Schedule',
@@ -43,6 +43,12 @@ export default function NavigationComponent({url}) {
               label: 'Scheduled Products',
               icon: CalendarIcon,
               selected: (url.includes('/scheduledProducts'))
+            },
+            {
+              url: '/storeSettings',
+              label: 'Settings',
+              icon: ProfileIcon,
+              selected: (url.includes('/settings'))
             },
           ]}
         />
